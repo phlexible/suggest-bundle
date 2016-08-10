@@ -1,0 +1,17 @@
+{
+    "version": "1.0",
+    "name": "phlexible/datasource-bundle",
+    "path-mappings": {
+        "/phlexible/phlexibledatasource/icons": "Resources/public/icons"
+    },
+    "bindings": {
+        "9f12b4e8-fe37-560b-b969-4fc54c0b41b7": {
+            "_class": "Puli\\Discovery\\Binding\\ResourceBinding",
+            "query": "/phlexible/phlexibledatasource/icons/*.png",
+            "type": "phlexible/icons"
+        }
+    },
+    "config": {
+        "bootstrap-file": "vendor/autoload.php"
+    }
+}
