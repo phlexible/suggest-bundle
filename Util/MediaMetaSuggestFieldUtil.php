@@ -73,15 +73,14 @@ class MediaMetaSuggestFieldUtil implements Util
 
         foreach ($fields as $field) {
             /* @var $field MetaSetField */
-            foreach ($this->metaDataManager->findByMetaSet($field->getMetaSet()) as $metaData) {
-                /* @var $metaData MetaDataInterface */
-                $suggestValues = $this->splitter->split($metaData->get($field->getName(), $valueBag->getLanguage()));
+            foreach ($this->metaDataManager->findByField($field) as $metaDataValue) {
+                $suggestValues = $this->splitter->split($metaDataValue->getValue());
 
                 if (!count($suggestValues)) {
                     continue;
                 }
 
-                if ($this->isOnline($metaData)) {
+                if ($this->isOnline($metaDataValue)) {
                     $values->addActiveValues($suggestValues);
                 } else {
                     $values->addInactiveValues($suggestValues);
@@ -93,11 +92,11 @@ class MediaMetaSuggestFieldUtil implements Util
     }
 
     /**
-     * @param mixed $metaData
+     * @param mixed $metaDataValue
      *
      * @return bool
      */
-    private function isOnline($metaData)
+    private function isOnline($metaDataValue)
     {
         return true;
     }

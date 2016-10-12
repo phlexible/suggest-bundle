@@ -8,9 +8,12 @@
 
 namespace Phlexible\Bundle\SuggestBundle\Util;
 
+use Phlexible\Bundle\ElementBundle\Entity\ElementMetaDataValue;
+use Phlexible\Bundle\ElementtypeBundle\Model\Elementtype;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
-use Phlexible\Component\MetaSet\Model\MetaDataInterface;
+use Phlexible\Bundle\TeaserBundle\Model\TeaserManagerInterface;
+use Phlexible\Bundle\TreeBundle\ContentTree\ContentTreeManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaSetField;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;
@@ -33,23 +36,38 @@ class ElementMetaSuggestFieldUtil implements Util
     private $metaDataManager;
 
     /**
+     * @var ContentTreeManagerInterface
+     */
+    private $treeManager;
+
+    /**
+     * @var TeaserManagerInterface
+     */
+    private $teaserManager;
+
+    /**
      * @var ValueSplitter
      */
     private $splitter;
 
     /**
-     * @param MetaSetManagerInterface $metaSetManager
-     * @param MetaDataManagerInterface $metaDataManager
-     * @param string $separatorChar
+     * @param MetaSetManagerInterface     $metaSetManager
+     * @param MetaDataManagerInterface    $metaDataManager
+     * @param ContentTreeManagerInterface $treeManager
+     * @param TeaserManagerInterface      $teaserManager
+     * @param string                      $separatorChar
      */
     public function __construct(
         MetaSetManagerInterface $metaSetManager,
         MetaDataManagerInterface $metaDataManager,
+        ContentTreeManagerInterface $treeManager,
+        TeaserManagerInterface $teaserManager,
         $separatorChar
-    )
-    {
+    ) {
         $this->metaSetManager = $metaSetManager;
         $this->metaDataManager = $metaDataManager;
+        $this->treeManager = $treeManager;
+        $this->teaserManager = $teaserManager;
         $this->splitter = new ValueSplitter($separatorChar);
     }
 
@@ -77,15 +95,14 @@ class ElementMetaSuggestFieldUtil implements Util
 
         foreach ($fields as $field) {
             /* @var $field MetaSetField */
-            foreach ($this->metaDataManager->findByMetaSet($field->getMetaSet()) as $metaData) {
-                /* @var $metaData MetaDataInterface */
-                $suggestValues = $this->splitter->split($metaData->get($field->getName(), $valueBag->getLanguage()));
+            foreach ($this->metaDataManager->findByField($field) as $metaDataValue) {
+                $suggestValues = $this->splitter->split($metaDataValue->getValue());
 
                 if (!count($suggestValues)) {
                     continue;
                 }
 
-                if ($this->isOnline($metaData)) {
+                if ($this->isOnline($metaDataValue)) {
                     $values->addActiveValues($suggestValues);
                 } else {
                     $values->addInactiveValues($suggestValues);
@@ -97,12 +114,40 @@ class ElementMetaSuggestFieldUtil implements Util
     }
 
     /**
-     * @param mixed $metaData
+     * @param ElementMetaDataValue $metaDataValue
      *
      * @return bool
      */
-    private function isOnline($metaData)
+    private function isOnline(ElementMetaDataValue $metaDataValue)
     {
-        return true;
+        $elementVersion = $metaDataValue->getElementVersion();
+        $element = $elementVersion->getElement();
+        $elementSource = $elementVersion->getElementSource();
+
+        if ($elementSource->getType() === Elementtype::TYPE_PART) {
+            foreach ($this->teaserManager->findBy(array('typeId' => $element->getEid())) as $teaser) {
+                if ($this->teaserManager->getPublishedVersion(
+                        $teaser,
+                        $metaDataValue->getLanguage()
+                    ) === $elementVersion->getVersion()
+                ) {
+                    return true;
+                }
+            }
+        } else {
+            foreach ($this->treeManager->findAll() as $tree) {
+                foreach ($tree->getByTypeId($element->getEid()) as $node) {
+                    if ($tree->getPublishedVersion(
+                            $node,
+                            $metaDataValue->getLanguage()
+                        ) === $elementVersion->getVersion()
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
