@@ -14,7 +14,7 @@ Phlexible.suggest.SuggestConfigurationWindow = Ext.extend(Ext.Window, {
             border: false,
             autoExpandColumn: 'datasource',
             store: new Ext.data.JsonStore({
-                url: Phlexible.Router.generate('datasources_list'),
+                url: Phlexible.Router.generate('suggest_datasources_list'),
                 fields: ['id', 'title'],
                 id: 'id',
                 root: 'datasources',
@@ -53,7 +53,7 @@ Phlexible.suggest.SuggestConfigurationWindow = Ext.extend(Ext.Window, {
                             return;
                         }
                         Ext.Ajax.request({
-                            url: Phlexible.Router.generate('datasources_create'),
+                            url: Phlexible.Router.generate('suggest_datasources_create'),
                             params: {
                                 title: title
                             },

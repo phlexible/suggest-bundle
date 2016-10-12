@@ -44,7 +44,7 @@ class FieldController extends Controller
      * @param Request $request
      *
      * @return JsonResponse
-     * @Route("/suggest", name="datasources_field_suggest")
+     * @Route("/suggest", name="suggest_field_suggest")
      * @Security("is_granted('ROLE_ELEMENTS')")
      */
     public function suggestAction(Request $request)

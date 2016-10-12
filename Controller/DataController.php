@@ -45,7 +45,7 @@ class DataController
      * Return something
      *
      * @return JsonResponse
-     * @Route("/list", name="datasources_list")
+     * @Route("/list", name="suggest_datasources_list")
      */
     public function listAction()
     {
@@ -68,7 +68,7 @@ class DataController
      * @param Request $request
      *
      * @return ResultResponse
-     * @Route("/create", name="datasources_create")
+     * @Route("/create", name="suggest_datasources_create")
      */
     public function createAction(Request $request)
     {
@@ -99,7 +99,7 @@ class DataController
      * @param Request $request
      *
      * @return ResultResponse
-     * @Route("/add", name="datasources_add")
+     * @Route("/add", name="suggest_datasources_add")
      */
     public function addAction(Request $request)
     {
@@ -114,7 +114,7 @@ class DataController
         $source->addValueForLanguage($key, false);
 
         // save
-        $dataSourceManager->save($source, $this->getUser()->getId());
+        $this->dataSourceManager->save($source, $this->getUser()->getId());
 
         return new ResultResponse(true);
     }

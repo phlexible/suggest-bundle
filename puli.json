@@ -2,9 +2,15 @@
     "version": "1.0",
     "name": "phlexible/suggest-bundle",
     "path-mappings": {
+        "/phlexible/phlexiblesuggest/scripts": "Resources/scripts",
         "/phlexible/phlexiblesuggest/icons": "Resources/public/icons"
     },
     "bindings": {
+        "3f12b4e8-fe37-560b-b969-4fc54c0b41b7": {
+            "_class": "Puli\\Discovery\\Binding\\ResourceBinding",
+            "query": "/phlexible/phlexiblesuggest/scripts/**/*.js",
+            "type": "phlexible/scripts"
+        },
         "9f12b4e8-fe37-560b-b969-4fc54c0b41b7": {
             "_class": "Puli\\Discovery\\Binding\\ResourceBinding",
             "query": "/phlexible/phlexiblesuggest/icons/*.png",

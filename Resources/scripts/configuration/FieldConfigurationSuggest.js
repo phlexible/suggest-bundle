@@ -18,7 +18,7 @@ Phlexible.suggest.configuration.FieldConfigurationSuggest = Ext.extend(Ext.form.
                 hideMode: 'display',
                 allowBlank: false,
                 store: new Ext.data.JsonStore({
-                    url: Phlexible.Router.generate('datasources_list'),
+                    url: Phlexible.Router.generate('suggest_datasources_list'),
                     root: 'datasources',
                     fields: ['id', 'title'],
                     autoLoad: true,
