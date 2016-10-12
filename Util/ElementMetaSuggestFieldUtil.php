@@ -10,7 +10,9 @@ namespace Phlexible\Bundle\SuggestBundle\Util;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Component\MetaSet\Model\MetaDataInterface;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
+use Phlexible\Component\MetaSet\Model\MetaSetField;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;
 
 /**
@@ -31,20 +33,24 @@ class ElementMetaSuggestFieldUtil implements Util
     private $metaDataManager;
 
     /**
-     * @var string
+     * @var ValueSplitter
      */
-    private $separatorChar;
+    private $splitter;
 
     /**
-     * @param MetaSetManagerInterface  $metaSetManager
+     * @param MetaSetManagerInterface $metaSetManager
      * @param MetaDataManagerInterface $metaDataManager
-     * @param string                   $separatorChar
+     * @param string $separatorChar
      */
-    public function __construct(MetaSetManagerInterface $metaSetManager, MetaDataManagerInterface $metaDataManager, $separatorChar)
+    public function __construct(
+        MetaSetManagerInterface $metaSetManager,
+        MetaDataManagerInterface $metaDataManager,
+        $separatorChar
+    )
     {
         $this->metaSetManager = $metaSetManager;
         $this->metaDataManager = $metaDataManager;
-        $this->separatorChar = $separatorChar;
+        $this->splitter = new ValueSplitter($separatorChar);
     }
 
     /**
@@ -68,15 +74,21 @@ class ElementMetaSuggestFieldUtil implements Util
         }
 
         $values = new ValuesCollection();
-        foreach ($fields as $field) {
-            foreach ($this->metaDataManager->findByMetaSet($field->getMetaSet()) as $metaData) {
-                $value = $metaData->get($field->getId(), $valueBag->getLanguage());
 
-                $value = $this->splitSuggestValue($value);
+        foreach ($fields as $field) {
+            /* @var $field MetaSetField */
+            foreach ($this->metaDataManager->findByMetaSet($field->getMetaSet()) as $metaData) {
+                /* @var $metaData MetaDataInterface */
+                $suggestValues = $this->splitter->split($metaData->get($field->getName(), $valueBag->getLanguage()));
+
+                if (!count($suggestValues)) {
+                    continue;
+                }
+
                 if ($this->isOnline($metaData)) {
-                    $values->addActiveValue($value);
+                    $values->addActiveValues($suggestValues);
                 } else {
-                    $values->addInactiveValue($value);
+                    $values->addInactiveValues($suggestValues);
                 }
             }
         }
@@ -92,31 +104,5 @@ class ElementMetaSuggestFieldUtil implements Util
     private function isOnline($metaData)
     {
         return true;
-    }
-
-    /**
-     * Split value into parts and remove duplicates.
-     *
-     * @param string $concatenated
-     *
-     * @return array
-     */
-    private function splitSuggestValue($concatenated)
-    {
-        $keys = [];
-
-        $splitted = explode($this->separatorChar, $concatenated);
-        foreach ($splitted as $key) {
-            $key = trim($key);
-
-            // skip empty values
-            if (strlen($key)) {
-                $keys[] = $key;
-            }
-        }
-
-        $uniqueKeys = array_unique($keys);
-
-        return $uniqueKeys;
     }
 }

@@ -33,9 +33,9 @@ class MediaMetaSuggestFieldUtil implements Util
     private $metaDataManager;
 
     /**
-     * @var string
+     * @var ValueSplitter
      */
-    private $separatorChar;
+    private $splitter;
 
     /**
      * @param MetaSetManagerInterface  $metaSetManager
@@ -46,7 +46,7 @@ class MediaMetaSuggestFieldUtil implements Util
     {
         $this->metaSetManager = $metaSetManager;
         $this->metaDataManager = $metaDataManager;
-        $this->separatorChar = $separatorChar;
+        $this->splitter = new ValueSplitter($separatorChar);
     }
 
     /**
@@ -75,7 +75,7 @@ class MediaMetaSuggestFieldUtil implements Util
             /* @var $field MetaSetField */
             foreach ($this->metaDataManager->findByMetaSet($field->getMetaSet()) as $metaData) {
                 /* @var $metaData MetaDataInterface */
-                $suggestValues = $this->splitSuggestValue(trim($metaData->get($field->getName(), $valueBag->getLanguage())));
+                $suggestValues = $this->splitter->split($metaData->get($field->getName(), $valueBag->getLanguage()));
 
                 if (!count($suggestValues)) {
                     continue;
@@ -100,35 +100,5 @@ class MediaMetaSuggestFieldUtil implements Util
     private function isOnline($metaData)
     {
         return true;
-    }
-
-    /**
-     * Split value into parts and remove duplicates.
-     *
-     * @param string $concatenated
-     *
-     * @return array
-     */
-    private function splitSuggestValue($concatenated)
-    {
-        if (!trim($concatenated)) {
-            return array();
-        }
-
-        $keys = [];
-
-        $splitted = explode($this->separatorChar, $concatenated);
-        foreach ($splitted as $key) {
-            $key = trim($key);
-
-            // skip empty values
-            if (strlen($key)) {
-                $keys[] = $key;
-            }
-        }
-
-        $uniqueKeys = array_unique($keys);
-
-        return $uniqueKeys;
     }
 }
