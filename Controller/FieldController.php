@@ -64,7 +64,7 @@ class FieldController extends Controller
             $filter = explode('|', $query);
         }
 
-        foreach ($source->getActiveValuesForLanguage($language) as $key => $value) {
+        foreach ($source->getValuesForLanguage($language) as $key => $value) {
             if (!empty($query)) {
                 if ($filter && !in_array($value, $filter)) {
                     continue;

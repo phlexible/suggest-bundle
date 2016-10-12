@@ -23,7 +23,7 @@ class SuggestRoleProvider extends RoleProvider
     public function provideRoles()
     {
         return [
-            'ROLE_DATA_SOURCES',
+            'ROLE_SUGGEST',
         ];
     }
 

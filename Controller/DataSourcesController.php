@@ -13,18 +13,17 @@ use Phlexible\Bundle\GuiBundle\Response\ResultResponse;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Data controller
+ * Data sources controller
  *
  * @author Stephan Wentz <sw@brainbits.net>
- * @Route("/datasources", service="phlexible_suggest.data_controller")
+ * @Route("/datasources", service="phlexible_suggest.data_sources_controller")
  * @Security("is_granted('ROLE_SUGGEST')")
  */
-class DataController
+class DataSourcesController
 {
     /**
      * @var DataSourceManagerInterface
@@ -117,5 +116,31 @@ class DataController
         $this->dataSourceManager->save($source, $this->getUser()->getId());
 
         return new ResultResponse(true);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @Route("/values", name="suggest_datasources_values")
+     */
+    public function valuesAction(Request $request)
+    {
+        $sourceId = $request->get('source_id');
+        $language = $request->get('language', 'en');
+
+        $dataSource = $this->dataSourceManager->find($sourceId);
+        $keys = $dataSource->getValuesForLanguage($language);
+
+        $data = [];
+        foreach ($keys as $key) {
+            if (!$key) {
+                continue;
+            }
+
+            $data[] = ['key' => $key, 'value' => $key];
+        }
+
+        return new JsonResponse(['values' => $data]);
     }
 }

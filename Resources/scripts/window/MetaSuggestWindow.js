@@ -59,7 +59,7 @@ Phlexible.suggest.MetaSuggestWindow = Ext.extend(Ext.Window, {
                         suggestLanguage: this.metaLanguage,
                         store: new Ext.data.JsonStore({
                             fields: ['key', 'value'],
-                            url: Phlexible.Router.generate('metasets_values'),
+                            url: Phlexible.Router.generate('suggest_datasources_values'),
                             root: 'values',
                             autoLoad: true,
                             id: 'key',

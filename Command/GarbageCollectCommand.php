@@ -27,7 +27,8 @@ class GarbageCollectCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('datasource:garbage-collect')
+            ->setName('suggest:garbage-collect')
+            ->setAliases(array('suggest:gc'))
             ->setDescription('Cleanup unused data source values')
             ->addOption('run', null, InputOption::VALUE_NONE, 'Execute. Otherwise only stats are shown.');
     }

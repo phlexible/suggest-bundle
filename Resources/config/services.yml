@@ -36,9 +36,15 @@ services:
             - "@phlexible_media_manager.file_meta_data_manager"
             - "%phlexible_suggest.suggest_separator%"
 
+    phlexible_suggest.field.suggest:
+        class: Phlexible\Bundle\SuggestBundle\Field\SuggestField
+        public: false
+        tags:
+            - {name: phlexible_elementtype.field, alias: suggest}
+
     # controllers
-    phlexible_suggest.data_controller:
-        class: Phlexible\Bundle\SuggestBundle\Controller\DataController
+    phlexible_suggest.data_sources_controller:
+        class: Phlexible\Bundle\SuggestBundle\Controller\DataSourcesController
         arguments:
             - "@phlexible_suggest.data_source_manager"
 
@@ -71,6 +77,13 @@ services:
         arguments:
             - "@phlexible_suggest.data_source_manager"
             - "@phlexible_element.element_service"
+        tags:
+            - {name: kernel.event_subscriber}
+
+    phlexible_suggest.listener.meta_set:
+        class: Phlexible\Bundle\SuggestBundle\EventListener\MetaSetListener
+        arguments:
+            - "@phlexible_suggest.data_source_manager"
         tags:
             - {name: kernel.event_subscriber}
 
