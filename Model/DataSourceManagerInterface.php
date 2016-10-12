@@ -6,9 +6,9 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Model;
+namespace Phlexible\Bundle\SuggestBundle\Model;
 
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSource;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 
 /**
  * Data source manager interface

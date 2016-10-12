@@ -6,10 +6,11 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Controller;
+namespace Phlexible\Bundle\SuggestBundle\Controller;
 
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSource;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\GuiBundle\Response\ResultResponse;
+use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,11 +21,26 @@ use Symfony\Component\HttpFoundation\Request;
  * Data controller
  *
  * @author Stephan Wentz <sw@brainbits.net>
- * @Route("/datasources")
- * @Security("is_granted('ROLE_DATA_SOURCES')")
+ * @Route("/datasources", service="phlexible_suggest.data_controller")
+ * @Security("is_granted('ROLE_SUGGEST')")
  */
-class DataController extends Controller
+class DataController
 {
+    /**
+     * @var DataSourceManagerInterface
+     */
+    private $dataSourceManager;
+
+    /**
+     * DataController constructor.
+     *
+     * @param DataSourceManagerInterface $dataSourceManager
+     */
+    public function __construct(DataSourceManagerInterface $dataSourceManager)
+    {
+        $this->dataSourceManager = $dataSourceManager;
+    }
+
     /**
      * Return something
      *
@@ -33,9 +49,7 @@ class DataController extends Controller
      */
     public function listAction()
     {
-        $dataSourceManager = $this->get('phlexible_data_source.data_source_manager');
-
-        $dataSources = $dataSourceManager->findBy([]);
+        $dataSources = $this->dataSourceManager->findBy([]);
 
         $sources = [];
         foreach ($dataSources as $dataSource) {
@@ -60,8 +74,6 @@ class DataController extends Controller
     {
         $title = $request->get('title');
 
-        $dataSourceManager = $this->get('phlexible_data_source.data_source_manager');
-
         $dataSource = new DataSource();
         $dataSource
             ->setTitle($title)
@@ -71,7 +83,7 @@ class DataController extends Controller
             ->setModifyUserId($dataSource->getCreateUserId());
 
         try {
-            $dataSourceManager->updateDataSource($dataSource);
+            $this->dataSourceManager->updateDataSource($dataSource);
 
             $response = new ResultResponse(true);
         } catch (\Exception $e) {
@@ -95,10 +107,8 @@ class DataController extends Controller
         $key = $request->get('key');
         $language = $request->get('language', 'de');
 
-        $dataSourceManager = $this->get('phlexible_data_source.data_source_manager');
-
         // load
-        $source = $dataSourceManager->find($sourceId);
+        $source = $this->dataSourceManager->find($sourceId);
 
         // add new key
         $source->addValueForLanguage($key, false);

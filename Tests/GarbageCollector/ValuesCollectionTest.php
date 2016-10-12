@@ -6,9 +6,9 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Tests\GarbageCollector;
+namespace Phlexible\Bundle\SuggestBundle\Tests\GarbageCollector;
 
-use Phlexible\Bundle\DataSourceBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 
 /**
  * Values collection test

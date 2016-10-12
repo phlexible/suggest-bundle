@@ -6,9 +6,9 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Command;
+namespace Phlexible\Bundle\SuggestBundle\Command;
 
-use Phlexible\Bundle\DataSourceBundle\DataSourceMessage;
+use Phlexible\Bundle\SuggestBundle\SuggestMessage;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,7 +37,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $gc = $this->getContainer()->get('phlexible_data_source.garbage_collector');
+        $gc = $this->getContainer()->get('phlexible_suggest.garbage_collector');
         $messagePoster = $this->getContainer()->get('phlexible_message.message_poster');
 
         $pretend = !$input->getOption('run');
@@ -78,7 +78,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
         }
 
         if (!$pretend && count($subjects)) {
-            $message = DataSourceMessage::create(
+            $message = SuggestMessage::create(
                 'Garbage collection run on '.count($stats).' data sources.',
                 implode(PHP_EOL, $subjects)
             );

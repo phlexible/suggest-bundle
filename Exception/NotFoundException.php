@@ -6,7 +6,7 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Exception;
+namespace Phlexible\Bundle\SuggestBundle\Exception;
 
 /**
  * Not found exception

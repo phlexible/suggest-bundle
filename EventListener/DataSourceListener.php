@@ -6,11 +6,11 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\EventListener;
+namespace Phlexible\Bundle\SuggestBundle\EventListener;
 
-use Phlexible\Bundle\DataSourceBundle\DataSourceEvents;
-use Phlexible\Bundle\DataSourceBundle\Event\GarbageCollectEvent;
-use Phlexible\Bundle\DataSourceBundle\Util\Util;
+use Phlexible\Bundle\SuggestBundle\SuggestEvents;
+use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
+use Phlexible\Bundle\SuggestBundle\Util\Util;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -39,7 +39,7 @@ class DataSourceListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            DataSourceEvents::BEFORE_GARBAGE_COLLECT => 'onGarbageCollect',
+            SuggestEvents::BEFORE_GARBAGE_COLLECT => 'onGarbageCollect',
         ];
     }
 

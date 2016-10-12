@@ -6,12 +6,12 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Doctrine;
+namespace Phlexible\Bundle\SuggestBundle\Doctrine;
 
 use Doctrine\ORM\EntityManager;
-use Phlexible\Bundle\DataSourceBundle\DataSource\DataSourceRepository;
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSource;
-use Phlexible\Bundle\DataSourceBundle\Model\DataSourceManagerInterface;
+use Phlexible\Bundle\SuggestBundle\DataSource\DataSourceRepository;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
+use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 
 /**
  * Doctrine data source manager
@@ -37,7 +37,7 @@ class DataSourceManager implements DataSourceManagerInterface
     {
         $this->entityManager = $entityManager;
 
-        $this->dataSourceRepository = $entityManager->getRepository('PhlexibleDataSourceBundle:DataSource');
+        $this->dataSourceRepository = $entityManager->getRepository(DataSource::class);
     }
 
     /**

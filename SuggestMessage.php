@@ -6,23 +6,23 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle;
+namespace Phlexible\Bundle\SuggestBundle;
 
 use Phlexible\Bundle\MessageBundle\Entity\Message;
 
 /**
- * Data source message
+ * Suggest message
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class DataSourceMessage extends Message
+class SuggestMessage extends Message
 {
     /**
      * {@inheritdoc}
      */
     public static function getDefaultChannel()
     {
-        return 'datasource';
+        return 'suggest';
     }
 
     /**
@@ -30,6 +30,6 @@ class DataSourceMessage extends Message
      */
     public static function getDefaultRole()
     {
-        return 'ROLE_DATA_SOURCES';
+        return 'ROLE_SUGGEST';
     }
 }

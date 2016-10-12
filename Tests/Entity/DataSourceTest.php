@@ -6,9 +6,9 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Tests\Entity;
+namespace Phlexible\Bundle\SuggestBundle\Tests\Entity;
 
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSource;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 
 /**
  * Data source test

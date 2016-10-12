@@ -7,7 +7,7 @@
          syntaxCheck="true"
          verbose="true">
     <testsuites>
-        <testsuite name="tinymce-bundle">
+        <testsuite name="suggest-bundle">
             <directory>Tests</directory>
         </testsuite>
     </testsuites>

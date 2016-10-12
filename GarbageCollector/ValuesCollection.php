@@ -6,7 +6,7 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\GarbageCollector;
+namespace Phlexible\Bundle\SuggestBundle\GarbageCollector;
 
 /**
  * Values collection

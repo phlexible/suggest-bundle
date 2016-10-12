@@ -6,16 +6,16 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\RoleProvider;
+namespace Phlexible\Bundle\SuggestBundle\RoleProvider;
 
 use Phlexible\Bundle\GuiBundle\Security\RoleProvider\RoleProvider;
 
 /**
- * Data source role provider
+ * Suggest role provider
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class DataSourceRoleProvider extends RoleProvider
+class SuggestRoleProvider extends RoleProvider
 {
     /**
      * {@inheritdoc}

@@ -6,10 +6,10 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Event;
+namespace Phlexible\Bundle\SuggestBundle\Event;
 
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\DataSourceBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

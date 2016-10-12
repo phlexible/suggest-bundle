@@ -6,7 +6,7 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\DataSource;
+namespace Phlexible\Bundle\SuggestBundle\DataSource;
 
 use Doctrine\ORM\EntityRepository;
 

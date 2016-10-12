@@ -6,12 +6,12 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\GarbageCollector;
+namespace Phlexible\Bundle\SuggestBundle\GarbageCollector;
 
-use Phlexible\Bundle\DataSourceBundle\DataSourceEvents;
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\DataSourceBundle\Event\GarbageCollectEvent;
-use Phlexible\Bundle\DataSourceBundle\Model\DataSourceManagerInterface;
+use Phlexible\Bundle\SuggestBundle\SuggestEvents;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
+use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
+use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -89,7 +89,7 @@ class GarbageCollector
     private function garbageCollect(DataSourceValueBag $valueBag, $mode, $pretend = false)
     {
         $event = new GarbageCollectEvent($valueBag);
-        if ($this->dispatcher->dispatch(DataSourceEvents::BEFORE_GARBAGE_COLLECT, $event)->isPropagationStopped()) {
+        if ($this->dispatcher->dispatch(SuggestEvents::BEFORE_GARBAGE_COLLECT, $event)->isPropagationStopped()) {
             return new ValuesCollection();
         }
 
@@ -145,7 +145,7 @@ class GarbageCollector
         }
 
         $event = new GarbageCollectEvent($valueBag);
-        $this->dispatcher->dispatch(DataSourceEvents::GARBAGE_COLLECT, $event);
+        $this->dispatcher->dispatch(SuggestEvents::GARBAGE_COLLECT, $event);
 
         return new ValuesCollection($activeValues, $inactiveValues, $removeValues);
     }

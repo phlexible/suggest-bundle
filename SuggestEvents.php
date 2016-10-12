@@ -6,22 +6,22 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle;
+namespace Phlexible\Bundle\SuggestBundle;
 
 /**
- * Data source events
+ * Suggest events
  *
  * @author Phillip Look <pl@brainbits.net>
  */
-class DataSourceEvents
+class SuggestEvents
 {
     /**
      * Fired before garbage collection is invoked
      */
-    const BEFORE_GARBAGE_COLLECT = 'phlexible_data_source.before_garbage_collect';
+    const BEFORE_GARBAGE_COLLECT = 'phlexible_suggest.before_garbage_collect';
 
     /**
      * Fired after garbage collection is invoked
      */
-    const GARBAGE_COLLECT = 'phlexible_data_source.garbage_collect';
+    const GARBAGE_COLLECT = 'phlexible_suggest.garbage_collect';
 }

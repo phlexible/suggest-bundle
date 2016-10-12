@@ -6,10 +6,10 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Util;
+namespace Phlexible\Bundle\SuggestBundle\Util;
 
-use Phlexible\Bundle\DataSourceBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\DataSourceBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 use Phlexible\Bundle\ElementBundle\ElementService;
 use Phlexible\Bundle\ElementBundle\Entity\Element;
 use Phlexible\Bundle\ElementBundle\Entity\ElementVersion;

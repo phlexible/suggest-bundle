@@ -6,7 +6,7 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\DependencyInjection;
+namespace Phlexible\Bundle\SuggestBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,11 +32,8 @@ class PhlexibleDataSourceExtension extends Extension
         $configuration = $this->getConfiguration($config, $container);
         $config = $this->processConfiguration($configuration, $config);
 
-        $container->setParameter('phlexible_data_source.suggest_separator', $config['suggest']['separator']);
+        $container->setParameter('phlexible_suggest.suggest_separator', $config['suggest_separator']);
 
-        $container->setAlias(
-            'phlexible_data_source.data_source_manager',
-            'phlexible_data_source.doctrine.data_source_manager'
-        );
+        $container->setAlias('phlexible_suggest.data_source_manager', 'phlexible_suggest.doctrine.data_source_manager');
     }
 }

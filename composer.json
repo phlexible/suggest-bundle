@@ -1,12 +1,12 @@
 {
-    "name": "phlexible/datasource-bundle",
-    "description": "phlexible data source bundle",
+    "name": "phlexible/suggest-bundle",
+    "description": "phlexible suggest bundle",
     "license": "proprietary",
 	"type": "symfony-bundle",
 	"keywords": ["suggest", "tag"],
     "autoload": {
         "psr-4": {
-            "Phlexible\\Bundle\\DataSourceBundle\\": ""
+            "Phlexible\\Bundle\\SuggestBundle\\": ""
         }
     },
     "require": {

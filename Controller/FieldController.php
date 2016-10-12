@@ -6,8 +6,9 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Controller;
+namespace Phlexible\Bundle\SuggestBundle\Controller;
 
+use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,10 +19,25 @@ use Symfony\Component\HttpFoundation\Request;
  * Field Controller
  *
  * @author Matthias Harmuth <mharmuth@brainbits.net>
- * @Route("/datasources/field")
+ * @Route("/datasources/field", service="phlexible_suggest.field_controller")
  */
 class FieldController extends Controller
 {
+    /**
+     * @var DataSourceManagerInterface
+     */
+    private $dataSourceManager;
+
+    /**
+     * DataController constructor.
+     *
+     * @param DataSourceManagerInterface $dataSourceManager
+     */
+    public function __construct(DataSourceManagerInterface $dataSourceManager)
+    {
+        $this->dataSourceManager = $dataSourceManager;
+    }
+
     /**
      * Return selectfield data for lists
      *
@@ -41,9 +57,7 @@ class FieldController extends Controller
 
         $data = [];
 
-        $datasourceManager = $this->get('phlexible_data_source.data_source_manager');
-
-        $source = $datasourceManager->find($id);
+        $source = $this->dataSourceManager->find($id);
 
         $filter = null;
         if ($query && $valuesQuery) {

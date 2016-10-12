@@ -6,10 +6,10 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Exception;
+namespace Phlexible\Bundle\SuggestBundle\Exception;
 
 /**
- * Invalid argument exception for data source bundle
+ * Invalid argument exception
  *
  * @author Phillip Look <pl@brainbits.net>
  */

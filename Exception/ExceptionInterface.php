@@ -6,10 +6,10 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\Exception;
+namespace Phlexible\Bundle\SuggestBundle\Exception;
 
 /**
- * Exception interface for data source bundle
+ * Exception interface for suggest bundle
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

@@ -6,9 +6,10 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\EventListener;
+namespace Phlexible\Bundle\SuggestBundle\EventListener;
 
 use Doctrine\ORM\EntityManager;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\UserBundle\Event\ApplySuccessorEvent;
 
 /**
@@ -39,7 +40,7 @@ class ApplySuccessorListener
      */
     public function onApplySuccessor(ApplySuccessorEvent $event)
     {
-        $datasourceRepository = $this->entityManager->getRepository('PhlexibleDataSourceBundle:DataSource');
+        $datasourceRepository = $this->entityManager->getRepository(DataSource::class);
 
         $fromUser = $event->getFromUser();
         $toUser = $event->getToUser();

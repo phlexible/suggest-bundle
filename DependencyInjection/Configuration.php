@@ -6,7 +6,7 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle\DependencyInjection;
+namespace Phlexible\Bundle\SuggestBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -24,16 +24,11 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('phlexible_meta_set');
+        $rootNode = $treeBuilder->root('phlexible_suggest');
 
         $rootNode
             ->children()
-                ->arrayNode('suggest')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('separator')->defaultValue(',')->end()
-                    ->end()
-                ->end()
+                ->scalarNode('suggest_separator')->defaultValue(',')->end()
             ->end();
 
         return $treeBuilder;

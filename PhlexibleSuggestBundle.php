@@ -6,16 +6,15 @@
  * @license   proprietary
  */
 
-namespace Phlexible\Bundle\DataSourceBundle;
+namespace Phlexible\Bundle\SuggestBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Data source bundle
+ * Suggest bundle
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class PhlexibleDataSourceBundle extends Bundle
+class PhlexibleSuggestBundle extends Bundle
 {
-    const RESOURCE_DATASOURCES = 'datasources';
 }
