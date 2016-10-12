@@ -14,11 +14,11 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
- * Data source extension
+ * Suggest extension
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class PhlexibleDataSourceExtension extends Extension
+class PhlexibleSuggestExtension extends Extension
 {
     /**
      * {@inheritdoc}
