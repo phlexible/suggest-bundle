@@ -1,12 +1,12 @@
 Ext.require('Phlexible.elementtypes.configuration.FieldConfiguration');
-Ext.require('Phlexible.datasources.configuration.FieldConfigurationSuggest');
-Ext.require('Phlexible.datasources.MetaSuggestWindow');
-Ext.require('Phlexible.datasources.SuggestConfigurationWindow');
+Ext.require('Phlexible.suggest.configuration.FieldConfigurationSuggest');
+Ext.require('Phlexible.suggest.MetaSuggestWindow');
+Ext.require('Phlexible.suggest.SuggestConfigurationWindow');
 
 Phlexible.elementtypes.configuration.FieldConfiguration.prototype.initMyItems =
     Phlexible.elementtypes.configuration.FieldConfiguration.prototype.initMyItems.createSequence(function() {
         this.items.push({
-            xtype: 'datasources-configuration-field-configuration-suggest',
+            xtype: 'suggest-configuration-field-configuration-suggest',
             additional: true
         });
     });
@@ -30,7 +30,7 @@ Phlexible.metasets.util.Fields.prototype.initBeforeEditCallbacks =
                 }
             }
 
-            var w = new Phlexible.datasources.MetaSuggestWindow({
+            var w = new Phlexible.suggest.MetaSuggestWindow({
                 record: record,
                 valueField: field,
                 metaLanguage: grid.language,
@@ -51,7 +51,7 @@ Phlexible.metasets.util.Fields.prototype.initBeforeEditCallbacks =
 Phlexible.metasets.MainPanel.prototype.configureField =
     Phlexible.metasets.MainPanel.prototype.configureField.createSequence(function(grid, record) {
         if (record.get('type') === 'suggest') {
-            var w = new Phlexible.datasources.SuggestConfigurationWindow({
+            var w = new Phlexible.suggest.SuggestConfigurationWindow({
                 options: record.get('options'),
                 listeners: {
                     select: function(options) {

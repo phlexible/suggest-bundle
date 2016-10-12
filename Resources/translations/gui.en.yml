@@ -1,4 +1,4 @@
-datasources:
+suggest:
     suggest: Suggest
     source: Source
     datasource: DataSource
