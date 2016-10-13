@@ -131,7 +131,7 @@ class ElementSuggestFieldUtil implements Util
                     $elementStructure = $this->elementService->findElementStructure($elementVersion, $valueBag->getLanguage());
 
                     foreach ($elementStructure->getValues() as $value) {
-                        if ($value->getDsId() === $suggestNode->getDsId()) {
+                        if ($value->getValue() && is_array($value->getValue()) && $value->getDsId() === $suggestNode->getDsId()) {
                             if ($this->isOnline($element, $elementVersion, $elementtype, $valueBag->getLanguage())) {
                                 $values->addActiveValues($value->getValue());
                             } else {
@@ -143,7 +143,7 @@ class ElementSuggestFieldUtil implements Util
                     $rii = new \RecursiveIteratorIterator($elementStructure->getIterator(), \RecursiveIteratorIterator::SELF_FIRST);
                     foreach ($rii as $structure) {
                         foreach ($structure->getValues() as $value) {
-                            if ($value->getDsId() === $suggestNode->getDsId()) {
+                            if ($value->getValue() && is_array($value->getValue()) && $value->getDsId() === $suggestNode->getDsId()) {
                                 if ($this->isOnline($element, $elementVersion, $elementtype, $valueBag->getLanguage())) {
                                     $values->addActiveValues($value->getValue());
                                 } else {
