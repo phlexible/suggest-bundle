@@ -1,25 +1,23 @@
-PhlexibleElementFinderBundle
-============================
+PhlexibleSuggestBundle
+======================
 
-The PhlexibleElementFinderBundle adds support for a finder field in phlexible.
+The PhlexibleSuggestBundle adds support for suggest fields for element types and meta sets in phlexible.
 
 Installation
 ------------
 
-Installation is a 5 step process:
-
-1. Download PhlexibleElementFinderBundle using composer
+1. Download PhlexibleSuggestBundle using composer
 2. Enable the Bundle
-3. Import PhlexibleElementFinderBundle routing
+3. Import PhlexibleSuggestBundle routing
 4. Update your database schema
 5. Clear the symfony cache
 
-### Step 1: Download PhlexibleElementFinderBundle using composer
+### Step 1: Download PhlexibleSuggestBundle using composer
 
-Add PhlexibleElementFinderBundle by running the command:
+Add PhlexibleSuggestBundle by running the command:
 
 ``` bash
-$ php composer.phar require phlexible/element-finder-bundle "~1.0.0"
+$ php composer.phar require phlexible/suggest-bundle "~1.0.0"
 ```
 
 Composer will install the bundle to your project's `vendor/phlexible` directory.
@@ -36,7 +34,7 @@ public function registerBundles()
 {
     $bundles = array(
         // ...
-        new Phlexible\Bundle\ElementFinderBundle\PhlexibleElementFinderBundle(),
+        new Phlexible\Bundle\SuggestBundle\PhlexibleSuggestBundle(),
     );
 }
 ```
@@ -45,21 +43,12 @@ public function registerBundles()
 
 Import the PhlexibleElementFinderBundle routing.
 
-For frontend:
-
-``` yaml
-# app/config/routing.yml
-phlexible_element_finder_render:
-    resource: "@PhlexibleElementFinderBundle/Controller/RenderController.php"
-    type:     annotation
-```
-
 For administration backend:
 
 ``` yaml
 # app/config/admin_routing.yml
-phlexible_element_finder_catch:
-    resource: "@PhlexibleElementFinderBundle/Controller/CatchController.php"
+phlexible_suggest:
+    resource: "@PhlexibleSuggestBundle/Controller/"
     type:     annotation
 ```
 
