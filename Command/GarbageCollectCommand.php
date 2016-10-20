@@ -91,5 +91,4 @@ class GarbageCollectCommand extends ContainerAwareCommand
 
         return 0;
     }
-
 }

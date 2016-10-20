@@ -17,7 +17,7 @@ use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 
 /**
- * Doctrine data source manager
+ * Doctrine data source manager.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

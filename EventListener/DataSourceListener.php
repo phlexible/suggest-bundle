@@ -11,13 +11,13 @@
 
 namespace Phlexible\Bundle\SuggestBundle\EventListener;
 
-use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
+use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Phlexible\Bundle\SuggestBundle\Util\Util;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Data source listener
+ * Data source listener.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

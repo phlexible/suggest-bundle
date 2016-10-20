@@ -11,13 +11,13 @@
 
 namespace Phlexible\Bundle\SuggestBundle\Util;
 
-use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 use Phlexible\Bundle\ElementBundle\ElementService;
 use Phlexible\Bundle\ElementBundle\Entity\Element;
 use Phlexible\Bundle\ElementBundle\Entity\ElementVersion;
 use Phlexible\Bundle\ElementBundle\Model\ElementSourceManagerInterface;
 use Phlexible\Bundle\ElementtypeBundle\Model\Elementtype;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 use Phlexible\Bundle\TeaserBundle\Model\TeaserManagerInterface;
 use Phlexible\Bundle\TreeBundle\ContentTree\ContentTreeManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;

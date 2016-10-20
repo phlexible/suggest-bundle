@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle\Field;
 use Phlexible\Bundle\ElementtypeBundle\Field\AbstractField;
 
 /**
- * Suggest field
+ * Suggest field.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

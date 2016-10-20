@@ -12,7 +12,7 @@
 namespace Phlexible\Bundle\SuggestBundle\GarbageCollector;
 
 /**
- * Values collection
+ * Values collection.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

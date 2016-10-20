@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle\RoleProvider;
 use Phlexible\Bundle\GuiBundle\Security\RoleProvider\RoleProvider;
 
 /**
- * Suggest role provider
+ * Suggest role provider.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

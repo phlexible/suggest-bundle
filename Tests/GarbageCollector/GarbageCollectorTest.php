@@ -11,19 +11,19 @@
 
 namespace Phlexible\Bundle\SuggestBundle\Tests\GarbageCollector;
 
-use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\GarbageCollector;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
+use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Garbage collector test
+ * Garbage collector test.
  *
  * @author Phillip Look <pl@brainbits.net>
  */
@@ -68,13 +68,13 @@ class GarbageCollectorTest extends \PHPUnit_Framework_TestCase
         $this->eventDispatcher->addListener(
             SuggestEvents::BEFORE_GARBAGE_COLLECT,
             function() use (&$fired) {
-                $fired++;
+                ++$fired;
             }
         );
         $this->eventDispatcher->addListener(
             SuggestEvents::GARBAGE_COLLECT,
             function() use (&$fired) {
-                $fired++;
+                ++$fired;
             }
         );
 

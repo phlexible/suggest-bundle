@@ -11,8 +11,8 @@
 
 namespace Phlexible\Bundle\SuggestBundle\Controller;
 
-use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\GuiBundle\Response\ResultResponse;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Data sources controller
+ * Data sources controller.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  * @Route("/datasources", service="phlexible_suggest.data_sources_controller")
@@ -44,7 +44,7 @@ class DataSourcesController
     }
 
     /**
-     * Return something
+     * Return something.
      *
      * @return JsonResponse
      * @Route("/list", name="suggest_datasources_list")
@@ -57,7 +57,7 @@ class DataSourcesController
         foreach ($dataSources as $dataSource) {
             $sources[] = [
                 'id' => $dataSource->getId(),
-                'title' => $dataSource->getTitle()
+                'title' => $dataSource->getTitle(),
             ];
         }
 
@@ -65,7 +65,7 @@ class DataSourcesController
     }
 
     /**
-     * Return something
+     * Return something.
      *
      * @param Request $request
      *
@@ -96,7 +96,7 @@ class DataSourcesController
     }
 
     /**
-     * Return something
+     * Return something.
      *
      * @param Request $request
      *

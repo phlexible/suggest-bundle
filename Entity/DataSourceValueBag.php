@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Data source value bag
+ * Data source value bag.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  *

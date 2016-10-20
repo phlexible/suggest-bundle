@@ -13,9 +13,8 @@ namespace Phlexible\Bundle\SuggestBundle\Util;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
-use Phlexible\Component\MetaSet\Model\MetaSetField;
-use Phlexible\Component\MetaSet\Model\MetaDataInterface;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
+use Phlexible\Component\MetaSet\Model\MetaSetField;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;
 
 /**

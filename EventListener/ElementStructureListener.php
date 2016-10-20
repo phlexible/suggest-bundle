@@ -11,17 +11,17 @@
 
 namespace Phlexible\Bundle\SuggestBundle\EventListener;
 
-use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
-use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Phlexible\Bundle\ElementBundle\ElementEvents;
 use Phlexible\Bundle\ElementBundle\ElementService;
 use Phlexible\Bundle\ElementBundle\Event\ElementStructureEvent;
 use Phlexible\Bundle\ElementBundle\Model\ElementStructureValue;
 use Phlexible\Bundle\ElementtypeBundle\Model\ElementtypeStructure;
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
+use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Element structure listener
+ * Element structure listener.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

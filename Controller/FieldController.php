@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Field Controller
+ * Field Controller.
  *
  * @author Matthias Harmuth <mharmuth@brainbits.net>
  * @Route("/datasources/field", service="phlexible_suggest.field_controller")
@@ -42,7 +42,7 @@ class FieldController extends Controller
     }
 
     /**
-     * Return selectfield data for lists
+     * Return selectfield data for lists.
      *
      * @param Request $request
      *

@@ -16,7 +16,7 @@ use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Garbage collect event
+ * Garbage collect event.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
