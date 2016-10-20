@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle\Tests\GarbageCollector;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 
 /**
- * Values collection test
+ * Values collection test.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

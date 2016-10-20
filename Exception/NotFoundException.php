@@ -12,11 +12,10 @@
 namespace Phlexible\Bundle\SuggestBundle\Exception;
 
 /**
- * Not found exception
+ * Not found exception.
  *
  * @author Phillip Look <pl@brainbits.net>
  */
 class NotFoundException extends \Exception
 {
-
 }

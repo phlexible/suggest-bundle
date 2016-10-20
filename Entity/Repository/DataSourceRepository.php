@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle\DataSource;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Data source repository
+ * Data source repository.
  *
  * @author Phillip Look <pl@brainbits.net>
  */
@@ -68,7 +68,6 @@ class DataSourceRepository extends EntityRepository
             array_keys(array_intersect($oldKeysL, $this->lowerValue($inactiveKeys))),
             false
         );
-
     }
 
     /**
@@ -85,13 +84,13 @@ class DataSourceRepository extends EntityRepository
         }
 
         $this->db->update(
-            $this->db->prefix . self::T_DATASOURCE_VALUE,
+            $this->db->prefix.self::T_DATASOURCE_VALUE,
             [
                 self::C_DATASOURCE_VALUE_ACTIVE => (int) $isActive,
             ],
             [
-                self::C_DATASOURCE_VALUE_ID . ' in (?)'     => $existingIds,
-                self::C_DATASOURCE_VALUE_SOURCE_ID . ' = ?' => $dataSourceId,
+                self::C_DATASOURCE_VALUE_ID.' in (?)' => $existingIds,
+                self::C_DATASOURCE_VALUE_SOURCE_ID.' = ?' => $dataSourceId,
             ]
         );
     }
@@ -109,22 +108,22 @@ class DataSourceRepository extends EntityRepository
     protected function insertValues($dataSourceId, $language, array $insertedKeys, $isActive)
     {
         if (2 !== strlen($language)) {
-            $msg = 'Language not set correctly. Found: ' . $language;
+            $msg = 'Language not set correctly. Found: '.$language;
             throw new InvalidArgumentException($msg);
         }
 
         foreach ($insertedKeys as $insertedKey) {
-            $hashableString = $dataSourceId . $insertedKey . $language;
+            $hashableString = $dataSourceId.$insertedKey.$language;
 
             $this->db->insert(
-                $this->db->prefix . self::T_DATASOURCE_VALUE,
+                $this->db->prefix.self::T_DATASOURCE_VALUE,
                 [
-                    self::C_DATASOURCE_VALUE_ID        => Uuid::generate(),
+                    self::C_DATASOURCE_VALUE_ID => Uuid::generate(),
                     self::C_DATASOURCE_VALUE_SOURCE_ID => $dataSourceId,
-                    self::C_DATASOURCE_VALUE_LANGUAGE  => $language,
-                    self::C_DATASOURCE_VALUE_KEY       => $insertedKey,
-                    self::C_DATASOURCE_VALUE_ACTIVE    => (int) $isActive,
-                    self::C_DATASOURCE_VALUE_HASH      => md5($hashableString),
+                    self::C_DATASOURCE_VALUE_LANGUAGE => $language,
+                    self::C_DATASOURCE_VALUE_KEY => $insertedKey,
+                    self::C_DATASOURCE_VALUE_ACTIVE => (int) $isActive,
+                    self::C_DATASOURCE_VALUE_HASH => md5($hashableString),
                 ]
             );
         }
@@ -141,17 +140,17 @@ class DataSourceRepository extends EntityRepository
         if (null === $deletedIds) {
             // delete all
             $this->db->delete(
-                $this->db->prefix . self::T_DATASOURCE_VALUE,
+                $this->db->prefix.self::T_DATASOURCE_VALUE,
                 [
-                    self::C_DATASOURCE_VALUE_SOURCE_ID . ' = ?' => $dataSourceId,
+                    self::C_DATASOURCE_VALUE_SOURCE_ID.' = ?' => $dataSourceId,
                 ]
             );
         } elseif (count($deletedIds)) {
             $this->db->delete(
-                $this->db->prefix . self::T_DATASOURCE_VALUE,
+                $this->db->prefix.self::T_DATASOURCE_VALUE,
                 [
-                    self::C_DATASOURCE_VALUE_ID . ' in (?)'     => $deletedIds,
-                    self::C_DATASOURCE_VALUE_SOURCE_ID . ' = ?' => $dataSourceId,
+                    self::C_DATASOURCE_VALUE_ID.' in (?)' => $deletedIds,
+                    self::C_DATASOURCE_VALUE_SOURCE_ID.' = ?' => $dataSourceId,
                 ]
             );
         }

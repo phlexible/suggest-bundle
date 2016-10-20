@@ -16,7 +16,7 @@ use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\UserBundle\Event\ApplySuccessorEvent;
 
 /**
- * Apply successor listener
+ * Apply successor listener.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
@@ -37,7 +37,7 @@ class ApplySuccessorListener
 
     /**
      * User delete callback
-     * Will be called after a user is deleted to cleanup uids
+     * Will be called after a user is deleted to cleanup uids.
      *
      * @param ApplySuccessorEvent $event
      */

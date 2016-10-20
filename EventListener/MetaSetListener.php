@@ -17,7 +17,7 @@ use Phlexible\Component\MetaSet\MetaSetEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Meta Ste listener
+ * Meta Ste listener.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
