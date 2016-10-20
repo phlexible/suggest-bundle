@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle;
 use Phlexible\Bundle\MessageBundle\Entity\Message;
 
 /**
- * Suggest message
+ * Suggest message.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

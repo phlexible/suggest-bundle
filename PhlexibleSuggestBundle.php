@@ -14,7 +14,7 @@ namespace Phlexible\Bundle\SuggestBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Suggest bundle
+ * Suggest bundle.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */

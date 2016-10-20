@@ -12,11 +12,10 @@
 namespace Phlexible\Bundle\SuggestBundle\Exception;
 
 /**
- * Exception interface for suggest bundle
+ * Exception interface for suggest bundle.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
 interface ExceptionInterface
 {
-
 }

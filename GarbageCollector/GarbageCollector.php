@@ -11,15 +11,15 @@
 
 namespace Phlexible\Bundle\SuggestBundle\GarbageCollector;
 
-use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
+use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Garbage collector for data source values.
- * - unused values can be removed
+ * - unused values can be removed.
  *
  * @author Phillip Look <pl@brainbits.net>
  */
@@ -54,8 +54,8 @@ class GarbageCollector
     /**
      * Start garbage collection.
      *
-     * @param string  $mode
-     * @param boolean $pretend
+     * @param string $mode
+     * @param bool   $pretend
      *
      * @return array
      */
