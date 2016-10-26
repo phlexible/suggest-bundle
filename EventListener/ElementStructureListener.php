@@ -100,6 +100,10 @@ class ElementStructureListener implements EventSubscriberInterface
         $structureNode = $elementtypeStructure->getNode($structureValue->getDsId());
         $dataSourceId = $structureNode->getConfigurationValue('suggest_source');
 
+        if (!$dataSourceId) {
+            return;
+        }
+
         $dataSource = $this->dataSourceManager->find($dataSourceId);
         /* @var $dataSource DataSource */
         $values = (array) $structureValue->getValue();

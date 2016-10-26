@@ -95,7 +95,7 @@ class ElementMetaSuggestFieldUtil implements Util
 
         foreach ($fields as $field) {
             /* @var $field MetaSetField */
-            foreach ($this->metaDataManager->findByField($field) as $metaDataValue) {
+            foreach ($this->metaDataManager->findRawByField($field) as $metaDataValue) {
                 $suggestValues = $this->splitter->split($metaDataValue->getValue());
 
                 if (!count($suggestValues)) {
