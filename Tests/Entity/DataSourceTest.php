@@ -12,13 +12,16 @@
 namespace Phlexible\Bundle\SuggestBundle\Tests\Entity;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Data source test.
  *
  * @author Phillip Look <pl@brainbits.net>
+ *
+ * @covers \Phlexible\Bundle\SuggestBundle\Entity\DataSource
  */
-class DataSourceTest extends \PHPUnit_Framework_TestCase
+class DataSourceTest extends TestCase
 {
     /**
      * Set title.

@@ -12,13 +12,16 @@
 namespace Phlexible\Bundle\SuggestBundle\Tests\GarbageCollector;
 
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Values collection test.
  *
  * @author Stephan Wentz <sw@brainbits.net>
+ *
+ * @covers \Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection
  */
-class ValuesCollectionTest extends \PHPUnit_Framework_TestCase
+class ValuesCollectionTest extends TestCase
 {
     public function testAddActiveValue()
     {

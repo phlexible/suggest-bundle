@@ -17,6 +17,7 @@ use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\GarbageCollector;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Phlexible\Bundle\SuggestBundle\SuggestEvents;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -26,8 +27,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * Garbage collector test.
  *
  * @author Phillip Look <pl@brainbits.net>
+ *
+ * @covers \Phlexible\Bundle\SuggestBundle\GarbageCollector\GarbageCollector
  */
-class GarbageCollectorTest extends \PHPUnit_Framework_TestCase
+class GarbageCollectorTest extends TestCase
 {
     /**
      * @var GarbageCollector
