@@ -113,6 +113,9 @@ class ElementSuggestFieldUtil implements Util
 
             $rii = new \RecursiveIteratorIterator($elementtype->getStructure()->getIterator(), \RecursiveIteratorIterator::SELF_FIRST);
             foreach ($rii as $node) {
+                if (!$node) {
+                    continue;
+                }
                 if ($node->getType() === 'suggest') {
                     if (!empty($node->getConfigurationValue('suggest_source'))) {
                         $source = $node->getConfigurationValue('suggest_source');
