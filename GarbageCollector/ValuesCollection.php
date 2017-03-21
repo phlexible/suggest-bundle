@@ -11,12 +11,14 @@
 
 namespace Phlexible\Bundle\SuggestBundle\GarbageCollector;
 
+use Countable;
+
 /**
  * Values collection.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class ValuesCollection
+class ValuesCollection implements Countable
 {
     /**
      * @var array
@@ -147,6 +149,8 @@ class ValuesCollection
         if ($value && !in_array($value, $this->inactiveValues)) {
             $this->inactiveValues[] = $value;
         }
+
+        $this->inactiveValues = array_diff($this->inactiveValues, $this->activeValues);
 
         return $this;
     }
@@ -323,5 +327,13 @@ class ValuesCollection
         $this->addRemoveValues($values->getRemoveValues());
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return $this->countActiveValues() + $this->countInactiveValues() + $this->countRemoveValues();
     }
 }

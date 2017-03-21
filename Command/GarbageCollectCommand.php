@@ -13,6 +13,7 @@ namespace Phlexible\Bundle\SuggestBundle\Command;
 
 use Phlexible\Bundle\SuggestBundle\SuggestMessage;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,6 +34,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
             ->setName('suggest:garbage-collect')
             ->setAliases(array('suggest:gc'))
             ->setDescription('Cleanup unused data source values')
+            ->addArgument('datasource', InputArgument::OPTIONAL, 'Data source ID. If not stated, all datasources are garbage collected.')
             ->addOption('run', null, InputOption::VALUE_NONE, 'Execute. Otherwise only stats are shown.');
     }
 
@@ -44,8 +46,24 @@ class GarbageCollectCommand extends ContainerAwareCommand
         $gc = $this->getContainer()->get('phlexible_suggest.garbage_collector');
         $messagePoster = $this->getContainer()->get('phlexible_message.message_poster');
 
+        $this->getContainer()->get('doctrine.orm.default_entity_manager')->getConnection()->getConfiguration()->setSQLLogger(null);
+
         $pretend = !$input->getOption('run');
-        $stats = $gc->run(0, $pretend);
+        $datasourceId = $input->getArgument('datasource');
+
+        if ($datasourceId) {
+            $dataSource = $this->getContainer()->get('phlexible_suggest.data_source_manager')->find($datasourceId);
+
+            if (!$dataSource) {
+                $output->writeln("<error>Data Source {$datasourceId} not found.</>");
+
+                return 1;
+            }
+
+            $stats = $gc->runDataSource($dataSource, 0, $pretend);
+        } else {
+            $stats = $gc->run(0, $pretend);
+        }
 
         $subjects = array();
 

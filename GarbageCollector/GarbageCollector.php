@@ -11,10 +11,12 @@
 
 namespace Phlexible\Bundle\SuggestBundle\GarbageCollector;
 
+use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Phlexible\Bundle\SuggestBundle\SuggestEvents;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -35,20 +37,25 @@ class GarbageCollector
     private $dataSourceManager;
 
     /**
-     * Event dispatcher.
-     *
      * @var EventDispatcherInterface
      */
     private $dispatcher;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param DataSourceManagerInterface $dataSourceManager
      * @param EventDispatcherInterface   $dispatcher
+     * @param LoggerInterface            $logger
      */
-    public function __construct(DataSourceManagerInterface $dataSourceManager, EventDispatcherInterface $dispatcher)
+    public function __construct(DataSourceManagerInterface $dataSourceManager, EventDispatcherInterface $dispatcher, LoggerInterface $logger)
     {
         $this->dataSourceManager = $dataSourceManager;
         $this->dispatcher = $dispatcher;
+        $this->logger = $logger;
     }
 
     /**
@@ -65,18 +72,44 @@ class GarbageCollector
 
         $limit = 10;
         $offset = 0;
+
         foreach ($this->dataSourceManager->findBy([], null, $limit, $offset) as $dataSource) {
-            foreach ($dataSource->getValueBags() as $values) {
-                $result = $this->garbageCollect($values, $mode, $pretend);
-
-                $nums[$dataSource->getTitle()][$values->getLanguage()] = $result;
-            }
-
-            if (!$pretend) {
-                $this->dataSourceManager->updateDataSource($dataSource);
-            }
+            $nums = array_merge($nums, $this->runDataSource($dataSource, $mode, $pretend));
 
             $offset += $limit;
+        }
+
+        return $nums;
+    }
+
+    /**
+     * Start garbage collection.
+     *
+     * @param DataSource $dataSource
+     * @param string     $mode
+     * @param bool       $pretend
+     *
+     * @return array
+     */
+    public function runDataSource(DataSource $dataSource, $mode = self::MODE_MARK_UNUSED_INACTIVE, $pretend = false)
+    {
+        $nums = [];
+
+        foreach ($dataSource->getValueBags() as $values) {
+            $this->logger->notice("Garbage Collector | ".($pretend?"<question> PRETEND </> | ":"")."Data source {$dataSource->getTitle()} / {$dataSource->getId()} / Language {$values->getLanguage()}");
+
+            $result = $this->garbageCollect($values, $mode, $pretend);
+
+            $nums[$dataSource->getTitle()][$values->getLanguage()] = $result;
+
+            $this->logger->notice("Garbage Collector | Active <fg=green>{$result->countActiveValues()}</> | Inactive <fg=yellow>{$result->countInactiveValues()}</> | Remove <fg=red>{$result->countRemoveValues()}</>");
+            $this->logger->info("Garbage Collector | Active: ".json_encode($result->getActiveValues()));
+            $this->logger->info("Garbage Collector | Inactive: ".json_encode($result->getInactiveValues()));
+            $this->logger->info("Garbage Collector | Remove: ".json_encode($result->getRemoveValues()));
+        }
+
+        if (!$pretend) {
+            $this->dataSourceManager->updateDataSource($dataSource);
         }
 
         return $nums;

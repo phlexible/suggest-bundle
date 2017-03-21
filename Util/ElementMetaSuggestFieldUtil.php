@@ -20,6 +20,7 @@ use Phlexible\Bundle\TreeBundle\ContentTree\ContentTreeManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaSetField;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Utility class for suggest fields.
@@ -49,6 +50,11 @@ class ElementMetaSuggestFieldUtil implements Util
     private $teaserManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var ValueSplitter
      */
     private $splitter;
@@ -58,6 +64,7 @@ class ElementMetaSuggestFieldUtil implements Util
      * @param MetaDataManagerInterface    $metaDataManager
      * @param ContentTreeManagerInterface $treeManager
      * @param TeaserManagerInterface      $teaserManager
+     * @param LoggerInterface             $logger
      * @param string                      $separatorChar
      */
     public function __construct(
@@ -65,12 +72,14 @@ class ElementMetaSuggestFieldUtil implements Util
         MetaDataManagerInterface $metaDataManager,
         ContentTreeManagerInterface $treeManager,
         TeaserManagerInterface $teaserManager,
+        LoggerInterface $logger,
         $separatorChar
     ) {
         $this->metaSetManager = $metaSetManager;
         $this->metaDataManager = $metaDataManager;
         $this->treeManager = $treeManager;
         $this->teaserManager = $teaserManager;
+        $this->logger = $logger;
         $this->splitter = new ValueSplitter($separatorChar);
     }
 
@@ -94,11 +103,23 @@ class ElementMetaSuggestFieldUtil implements Util
             }
         }
 
+        $this->logger->info("Element Meta Suggest Field | Found suggest fields in ".count($fields)." element metasets.");
+
         $values = new ValuesCollection();
 
         foreach ($fields as $field) {
+            $metaDataValues = $this->metaDataManager->findRawByField($field);
+
+            if (!count($metaDataValues)) {
+                continue;
+            }
+
+            $this->logger->info("Element Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Metaset {$field->getMetaSet()->getName()} / <info>{$field->getMetaSet()->getId()}</> | Field <info>{$field->getName()}</> / <info>{$field->getId()}</> | <info>".count($metaDataValues)."</> Meta Data Values");
+
+            $subValues = new ValuesCollection();
+
             /* @var $field MetaSetField */
-            foreach ($this->metaDataManager->findRawByField($field) as $metaDataValue) {
+            foreach ($metaDataValues as $metaDataValue) {
                 $suggestValues = $this->splitter->split($metaDataValue->getValue());
 
                 if (!count($suggestValues)) {
@@ -106,11 +127,26 @@ class ElementMetaSuggestFieldUtil implements Util
                 }
 
                 if ($this->isOnline($metaDataValue)) {
-                    $values->addActiveValues($suggestValues);
+                    $subValues->addActiveValues($suggestValues);
                 } else {
-                    $values->addInactiveValues($suggestValues);
+                    $subValues->addInactiveValues($suggestValues);
                 }
             }
+
+            if (!count($subValues)) {
+                continue;
+            }
+
+            $values->merge($subValues);
+
+            $this->logger->debug("Element Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Inactive <fg=yellow>{$subValues->countInactiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
+        }
+
+        if (count($values)) {
+            $this->logger->info("Element Meta Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Inactive <fg=yellow>{$values->countInactiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
+            $this->logger->debug("Element Meta Suggest Field | Active: ".json_encode($values->getActiveValues()));
+            $this->logger->debug("Element Meta Suggest Field | Inactive: ".json_encode($values->getInactiveValues()));
+            $this->logger->debug("Element Meta Suggest Field | Remove: ".json_encode($values->getRemoveValues()));
         }
 
         return $values;
