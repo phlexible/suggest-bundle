@@ -138,7 +138,7 @@ class ElementSuggestFieldUtil implements Util
 
         $values = new ValuesCollection();
 
-        $this->logger->info("Element Suggest Field | Found suggest fields in ".count($structureNodeRows)." elementtypes.");
+        $this->logger->info("Element Suggest Field | Found suggest fields in <fg=cyan>".count($structureNodeRows)."</> elementtypes.");
 
         foreach ($structureNodeRows as $structureNodeRow) {
             /* @var $elementtype Elementtype */
@@ -152,7 +152,7 @@ class ElementSuggestFieldUtil implements Util
                 continue;
             }
 
-            $this->logger->info("Element Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Elementtype <info>{$elementtype->getUniqueId()}</> | Field <info>{$suggestNode->getName()}</> / <info>{$suggestNode->getDsId()}</> | <info>".count($structureValues)."</> Element Version Values");
+            $this->logger->info("Element Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Elementtype <fg=cyan>{$elementtype->getUniqueId()}</> | Field <fg=cyan>{$suggestNode->getName()}</> / <fg=cyan>{$suggestNode->getDsId()}</> | <fg=cyan>".count($structureValues)."</> Element Version Values");
 
             $subValues = new ValuesCollection();
 

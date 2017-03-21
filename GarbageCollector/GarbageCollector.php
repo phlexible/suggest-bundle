@@ -96,7 +96,7 @@ class GarbageCollector
         $nums = [];
 
         foreach ($dataSource->getValueBags() as $values) {
-            $this->logger->notice("Garbage Collector | ".($pretend?"<question> PRETEND </> | ":"")."Data source {$dataSource->getTitle()} / {$dataSource->getId()} / Language {$values->getLanguage()}");
+            $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> / Language <fg=cyan>{$values->getLanguage()}</>");
 
             $result = $this->garbageCollect($values, $mode, $pretend);
 

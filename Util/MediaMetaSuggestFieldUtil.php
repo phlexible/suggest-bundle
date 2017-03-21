@@ -86,7 +86,7 @@ class MediaMetaSuggestFieldUtil implements Util
             }
         }
 
-        $this->logger->info("{$this->typeHint} Meta Suggest Field | Found suggest fields in ".count($fields)." media metasets.");
+        $this->logger->info("{$this->typeHint} Meta Suggest Field | Found suggest fields in <fg=cyan>".count($fields)."</> media metasets.");
 
         $values = new ValuesCollection();
 
@@ -98,7 +98,7 @@ class MediaMetaSuggestFieldUtil implements Util
                 continue;
             }
 
-            $this->logger->info("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Metaset {$field->getMetaSet()->getName()} / <info>{$field->getMetaSet()->getId()}</> | Field <info>{$field->getName()}</> / <info>{$field->getId()}</> | <info>".count($metaDataValues)."</> Meta Data Values");
+            $this->logger->info("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Metaset <fg=cyan>{$field->getMetaSet()->getName()}</> / <fg=cyan>{$field->getMetaSet()->getId()}</> | Field <fg=cyan>{$field->getName()}</> / <fg=cyan>{$field->getId()}</> | <fg=cyan>".count($metaDataValues)."</> Meta Data Values");
 
             $subValues = new ValuesCollection();
 
