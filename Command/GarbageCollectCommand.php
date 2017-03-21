@@ -72,7 +72,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
             $cntKeep = count($result->getExistingValues());
             $cntObsolete = count($result->getObsoleteValues());
 
-            if ($commit) {
+            if (!$commit) {
                 $output->writeln(
                     "Garbage collection of Data Source <fg=cyan>{$result->getDataSource()->getTitle()}</> in language "
                     ."<fg=cyan>{$result->getLanguage()}</> would add <fg=yellow>$cntNew</> new, "
@@ -101,7 +101,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
             }
         }
 
-        if (!$commit && count($subjects)) {
+        if ($commit && count($subjects)) {
             $message = SuggestMessage::create(
                 'Garbage collection run on '.count($results).' data sources / languages.',
                 implode(PHP_EOL, $subjects)
