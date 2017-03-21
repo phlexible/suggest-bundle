@@ -87,6 +87,22 @@ class GarbageCollectorTest extends TestCase
         $this->collector->collect($this->datasourceValues)->willReturn(new ValueCollection());
     }
 
+    public function testCommit()
+    {
+        $this->manager->findBy(Argument::cetera())->willReturn([$this->datasource]);
+        $this->manager->updateDataSource(Argument::any())->shouldBeCalled();
+
+        $this->garbageCollector->run(true);
+    }
+
+    public function testShow()
+    {
+        $this->manager->findBy(Argument::cetera())->willReturn([$this->datasource]);
+        $this->manager->updateDataSource(Argument::any())->shouldNotBeCalled();
+
+        $this->garbageCollector->run();
+    }
+
     public function testEventsAreFired()
     {
         $fired = 0;
@@ -104,7 +120,6 @@ class GarbageCollectorTest extends TestCase
         );
 
         $this->manager->findBy(Argument::cetera())->willReturn([$this->datasource]);
-        $this->manager->updateDataSource(Argument::any())->shouldBeCalled();
 
         $this->garbageCollector->run();
 
@@ -114,12 +129,11 @@ class GarbageCollectorTest extends TestCase
     public function testRunWithNoValues()
     {
         $this->manager->findBy(Argument::cetera())->willReturn([$this->datasource]);
-        $this->manager->updateDataSource(Argument::any())->shouldBeCalled();
 
         $result = $this->garbageCollector->run();
 
         $this->assertCount(1, $result);
-        $this->assertCount(0, $result[0]->getActiveValues());
+        $this->assertCount(0, $result[0]->getNewValues());
         $this->assertCount(0, $result[0]->getObsoleteValues());
     }
 
@@ -129,11 +143,10 @@ class GarbageCollectorTest extends TestCase
         $this->datasource->addValueForLanguage('de', 'value2');
 
         $this->manager->findBy(Argument::cetera())->willReturn([$this->datasource]);
-        $this->manager->updateDataSource(Argument::any())->shouldBeCalled();
 
         $result = $this->garbageCollector->run();
         $this->assertCount(1, $result);
-        $this->assertSame([], $result[0]->getActiveValues()->getValues());
+        $this->assertSame([], $result[0]->getNewValues()->getValues());
         $this->assertSame(['value1', 'value2'], $result[0]->getObsoleteValues()->getValues());
     }
 }
