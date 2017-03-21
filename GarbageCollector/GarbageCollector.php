@@ -97,16 +97,14 @@ class GarbageCollector
     {
         $results = [];
 
-        foreach ($dataSource->getValueBags() as $values) {
-            $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> / Language <fg=cyan>{$values->getLanguage()}</>");
+        foreach ($dataSource->getValueBags() as $dataSourceValues) {
+            $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> / Language <fg=cyan>{$dataSourceValues->getLanguage()}</>");
 
-            $collectedValues = $this->garbageCollect($values, $pretend);
+            $results[] = $result = $this->garbageCollect($dataSource, $dataSourceValues, $pretend);
 
-            $results[] = new ValueResult($dataSource, $values->getLanguage(), $collectedValues);
-
-            $this->logger->notice("Garbage Collector | Active <fg=green>{$collectedValues->countActiveValues()}</> | Remove <fg=red>{$collectedValues->countRemoveValues()}</>");
-            $this->logger->info("Garbage Collector | Active: ".json_encode($collectedValues->getActiveValues()));
-            $this->logger->info("Garbage Collector | Remove: ".json_encode($collectedValues->getRemoveValues()));
+            $this->logger->notice("Garbage Collector | Active <fg=green>{$result->getActiveValues()->count()}</> | Remove <fg=red>{$result->getObsoleteValues()->count()}</>");
+            $this->logger->debug("Garbage Collector | Active: ".json_encode($result->getActiveValues()->getValues()));
+            $this->logger->debug("Garbage Collector | Remove: ".json_encode($result->getObsoleteValues()->getValues()));
         }
 
         if (!$pretend) {
@@ -117,44 +115,42 @@ class GarbageCollector
     }
 
     /**
-     * @param DataSourceValueBag $valueBag
+     * @param DataSource         $dataSource
+     * @param DataSourceValueBag $dataSourceValues
      * @param bool               $pretend
      *
-     * @return ValuesCollection
+     * @return ValueResult
      */
-    private function garbageCollect(DataSourceValueBag $valueBag, $pretend = false)
+    private function garbageCollect(DataSource $dataSource, DataSourceValueBag $dataSourceValues, $pretend = false)
     {
-        $event = new GarbageCollectEvent($valueBag);
+        $event = new GarbageCollectEvent($dataSourceValues);
         if ($this->dispatcher->dispatch(SuggestEvents::BEFORE_GARBAGE_COLLECT, $event)->isPropagationStopped()) {
             return null;
         }
 
-        $collectedValues = $this->valueCollector->collect($valueBag);
-        $activeValues = $collectedValues->getActiveValues();
+        $collectedValues = $this->valueCollector->collect($dataSourceValues);
+        $activeValues = $collectedValues->getValues();
 
-        $existingValues = $valueBag->getValues();
-
-        $removeValues = array_values(array_unique(array_diff($existingValues, $activeValues)));
+        $existingValues = $dataSourceValues->getValues();
+        $obsoleteValues = array_values(array_unique(array_diff($existingValues, $activeValues)));
 
         if (!$pretend) {
-            if (count($removeValues)) {
-                // apply changes if there is changeable data
-                foreach ($removeValues as $value) {
-                    $valueBag->removeValue($value);
+            if (count($obsoleteValues)) {
+                foreach ($obsoleteValues as $value) {
+                    $dataSourceValues->removeValue($value);
                 }
             }
 
             if (count($activeValues)) {
-                // apply changes if there is changeable data
                 foreach ($activeValues as $value) {
-                    $valueBag->addValue($value);
+                    $dataSourceValues->addValue($value);
                 }
             }
         }
 
-        $event = new GarbageCollectEvent($valueBag);
+        $event = new GarbageCollectEvent($dataSourceValues);
         $this->dispatcher->dispatch(SuggestEvents::GARBAGE_COLLECT, $event);
 
-        return new ValuesCollection($activeValues, $removeValues);
+        return new ValueResult($dataSource, $dataSourceValues->getLanguage(), $collectedValues, new ValueCollection($obsoleteValues));
     }
 }

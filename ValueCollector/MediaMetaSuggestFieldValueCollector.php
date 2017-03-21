@@ -12,7 +12,7 @@
 namespace Phlexible\Bundle\SuggestBundle\ValueCollector;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 use Phlexible\Bundle\SuggestBundle\Util\ValueSplitter;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaSetField;
@@ -72,7 +72,7 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
      *
      * @param DataSourceValueBag $valueBag
      *
-     * @return ValuesCollection
+     * @return ValueCollection
      */
     public function collect(DataSourceValueBag $valueBag)
     {
@@ -89,7 +89,7 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
 
         $this->logger->info("{$this->typeHint} Meta Suggest Field | Found suggest fields in <fg=cyan>".count($fields)."</> media metasets.");
 
-        $values = new ValuesCollection();
+        $values = new ValueCollection();
 
         foreach ($fields as $field) {
             /* @var $field MetaSetField */
@@ -101,7 +101,7 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
 
             $this->logger->info("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Metaset <fg=cyan>{$field->getMetaSet()->getName()}</> / <fg=cyan>{$field->getMetaSet()->getId()}</> | Field <fg=cyan>{$field->getName()}</> / <fg=cyan>{$field->getId()}</> | <fg=cyan>".count($metaDataValues)."</> Meta Data Values");
 
-            $subValues = new ValuesCollection();
+            $subValues = new ValueCollection();
 
             foreach ($metaDataValues as $metaDataValue) {
                 $suggestValues = $this->splitter->split($metaDataValue->getValue());
@@ -110,7 +110,7 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
                     continue;
                 }
 
-                $subValues->addActiveValues($suggestValues);
+                $subValues->addValues($suggestValues);
             }
 
             if (!count($subValues)) {
@@ -119,13 +119,12 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
 
             $values->merge($subValues);
 
-            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
+            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | # Active <fg=green>{$subValues->count()}</>");
         }
 
         if (count($values)) {
-            $this->logger->info("{$this->typeHint} Meta Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
-            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Active: ".json_encode($values->getActiveValues()));
-            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Remove: ".json_encode($values->getRemoveValues()));
+            $this->logger->info("{$this->typeHint} Meta Suggest Field | # Active <fg=green>{$values->count()}</>");
+            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Active: ".json_encode($values->getValues()));
         }
 
         return $values;

@@ -32,20 +32,27 @@ class ValueResult
     private $language;
 
     /**
-     * @var ValuesCollection
+     * @var ValueCollection
      */
-    private $values;
+    private $activeValues;
+
+    /**
+     * @var ValueCollection
+     */
+    private $obsoleteValues;
 
     /**
      * @param DataSource       $dataSource
      * @param string           $language
-     * @param ValuesCollection $values
+     * @param ValueCollection $activeValues
+     * @param ValueCollection $obsoleteValues
      */
-    public function __construct(DataSource $dataSource, $language, ValuesCollection $values)
+    public function __construct(DataSource $dataSource, $language, ValueCollection $activeValues, ValueCollection $obsoleteValues)
     {
         $this->dataSource = $dataSource;
         $this->language = $language;
-        $this->values = $values;
+        $this->activeValues = $activeValues;
+        $this->obsoleteValues = $obsoleteValues;
     }
 
     /**
@@ -65,10 +72,18 @@ class ValueResult
     }
 
     /**
-     * @return ValuesCollection
+     * @return ValueCollection
      */
-    public function getValues()
+    public function getActiveValues()
     {
-        return $this->values;
+        return $this->activeValues;
+    }
+
+    /**
+     * @return ValueCollection
+     */
+    public function getObsoleteValues()
+    {
+        return $this->obsoleteValues;
     }
 }

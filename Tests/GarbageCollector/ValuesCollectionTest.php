@@ -11,7 +11,7 @@
 
 namespace Phlexible\Bundle\SuggestBundle\Tests\GarbageCollector;
 
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -19,79 +19,36 @@ use PHPUnit\Framework\TestCase;
  *
  * @author Stephan Wentz <sw@brainbits.net>
  *
- * @covers \Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection
+ * @covers \Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection
  */
 class ValuesCollectionTest extends TestCase
 {
     public function testAddActiveValue()
     {
-        $values = new ValuesCollection();
+        $values = new ValueCollection();
 
-        $values->addActiveValue('test1');
-        $values->addActiveValue('test2');
+        $values->addValue('test1');
+        $values->addValue('test2');
 
-        $this->assertCount(2, $values->getActiveValues());
+        $this->assertCount(2, $values->getValues());
     }
 
     public function testAddActiveValues()
     {
-        $values = new ValuesCollection();
+        $values = new ValueCollection();
 
-        $values->addActiveValues(array('test1', 'test2'));
+        $values->addValues(array('test1', 'test2'));
 
-        $this->assertCount(2, $values->getActiveValues());
+        $this->assertCount(2, $values->getValues());
     }
 
     public function testAddActiveValueDoesNotAddDuplicates()
     {
-        $values = new ValuesCollection();
+        $values = new ValueCollection();
 
-        $values->addActiveValue('test');
-        $values->addActiveValue('test');
+        $values->addValue('test');
+        $values->addValue('test');
 
-        $this->assertCount(1, $values->getActiveValues());
-    }
-
-    public function testAddRemoveValue()
-    {
-        $values = new ValuesCollection();
-
-        $values->addRemoveValue('test1');
-        $values->addRemoveValue('test2');
-
-        $this->assertCount(2, $values->getRemoveValues());
-    }
-
-    public function testAddRemovesValue()
-    {
-        $values = new ValuesCollection();
-
-        $values->addRemoveValues(array('test1', 'test2'));
-
-        $this->assertCount(2, $values->getRemoveValues());
-    }
-
-    public function testAddRemoveValueDoesNotAddDuplicates()
-    {
-        $values = new ValuesCollection();
-
-        $values->addRemoveValue('test');
-        $values->addRemoveValue('test');
-
-        $this->assertCount(1, $values->getRemoveValues());
-    }
-
-    public function tesMergeValues()
-    {
-        $values1 = new ValuesCollection(array('active1', 'active2'), array('inactive1', 'inactive2'), array('remove1', 'remove2'));
-        $values2 = new ValuesCollection(array('active3', 'active1'), array('inactive3', 'inactive1'), array('remove3', 'remove1'));
-
-        $values = new ValuesCollection();
-        $values->merge($values1);
-        $values->merge($values2);
-
-        $this->assertSame(array('active1', 'active2', 'active3'), $values->getActiveValues());
-        $this->assertSame(array('inactive1', 'inactive2', 'inactive3'), $values->getInactiveValues());
-        $this->assertSame(array('remove1', 'remove2', 'remove3'), $values->getRemoveValues());
+        $this->assertCount(1, $values->getValues());
     }
 }

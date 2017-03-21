@@ -12,7 +12,7 @@
 namespace Phlexible\Bundle\SuggestBundle\Event;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -28,7 +28,7 @@ class GarbageCollectEvent extends Event
     private $values;
 
     /**
-     * @var ValuesCollection
+     * @var ValueCollection
      */
     private $collectedValues;
 
@@ -39,7 +39,7 @@ class GarbageCollectEvent extends Event
     {
         $this->values = $values;
 
-        $this->collectedValues = new ValuesCollection();
+        $this->collectedValues = new ValueCollection();
     }
 
     /**
@@ -51,7 +51,7 @@ class GarbageCollectEvent extends Event
     }
 
     /**
-     * @return ValuesCollection
+     * @return ValueCollection
      */
     public function getCollectedValues()
     {
@@ -66,9 +66,9 @@ class GarbageCollectEvent extends Event
     public function markActive($values)
     {
         if (is_array($values)) {
-            $this->collectedValues->addActiveValues($values);
+            $this->collectedValues->addValues($values);
         } else {
-            $this->collectedValues->addActiveValue($values);
+            $this->collectedValues->addValue($values);
         }
 
         return $this;
@@ -79,7 +79,7 @@ class GarbageCollectEvent extends Event
      */
     public function getActiveValues()
     {
-        return $this->collectedValues->getActiveValues();
+        return $this->collectedValues->getValues();
     }
 
     /**

@@ -15,7 +15,7 @@ use Phlexible\Bundle\SuggestBundle\Entity\DataSource;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\GarbageCollector;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Phlexible\Bundle\SuggestBundle\SuggestEvents;
 use Phlexible\Bundle\SuggestBundle\ValueCollector\ValueCollector;
@@ -84,7 +84,7 @@ class GarbageCollectorTest extends TestCase
         $this->datasourceValues->setLanguage('de');
         $this->datasource->addValueBag($this->datasourceValues);
 
-        $this->collector->collect($this->datasourceValues)->willReturn(new ValuesCollection());
+        $this->collector->collect($this->datasourceValues)->willReturn(new ValueCollection());
     }
 
     public function testEventsAreFired()
@@ -119,7 +119,8 @@ class GarbageCollectorTest extends TestCase
         $result = $this->garbageCollector->run();
 
         $this->assertCount(1, $result);
-        $this->assertCount(0, $result[0]->getValues());
+        $this->assertCount(0, $result[0]->getActiveValues());
+        $this->assertCount(0, $result[0]->getObsoleteValues());
     }
 
     public function testRunRemovesUnusedValues()
@@ -132,7 +133,7 @@ class GarbageCollectorTest extends TestCase
 
         $result = $this->garbageCollector->run();
         $this->assertCount(1, $result);
-        $this->assertSame([], $result[0]->getValues()->getActiveValues());
-        $this->assertSame(['value1', 'value2'], $result[0]->getValues()->getRemoveValues());
+        $this->assertSame([], $result[0]->getActiveValues()->getValues());
+        $this->assertSame(['value1', 'value2'], $result[0]->getObsoleteValues()->getValues());
     }
 }

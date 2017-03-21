@@ -16,7 +16,7 @@ use Phlexible\Bundle\ElementBundle\Model\ElementSourceManagerInterface;
 use Phlexible\Bundle\ElementtypeBundle\Model\Elementtype;
 use Phlexible\Bundle\ElementtypeBundle\Model\ElementtypeStructureNode;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 use Phlexible\Bundle\SuggestBundle\Util\ElementVersionChecker;
 use Phlexible\Bundle\SuggestBundle\Util\JsonValueSplitter;
 use Phlexible\Bundle\SuggestBundle\Util\ValueSplitter;
@@ -87,7 +87,7 @@ class ElementSuggestFieldValueCollector implements ValueCollector
      *
      * @param DataSourceValueBag $valueBag
      *
-     * @return ValuesCollection
+     * @return ValueCollection
      */
     public function collect(DataSourceValueBag $valueBag)
     {
@@ -126,7 +126,7 @@ class ElementSuggestFieldValueCollector implements ValueCollector
             }
         }
 
-        $values = new ValuesCollection();
+        $values = new ValueCollection();
 
         $this->logger->info("Element Suggest Field | Found suggest fields in <fg=cyan>".count($structureNodeRows)."</> elementtypes.");
 
@@ -144,7 +144,7 @@ class ElementSuggestFieldValueCollector implements ValueCollector
 
             $this->logger->info("Element Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Elementtype <fg=cyan>{$elementtype->getUniqueId()}</> | Field <fg=cyan>{$suggestNode->getName()}</> / <fg=cyan>{$suggestNode->getDsId()}</> | <fg=cyan>".count($structureValues)."</> Element Version Values");
 
-            $subValues = new ValuesCollection();
+            $subValues = new ValueCollection();
 
             foreach ($structureValues as $structureValue) {
                 if (!$structureValue->getContent()) {
@@ -157,7 +157,7 @@ class ElementSuggestFieldValueCollector implements ValueCollector
                 }
 
                 if ($this->versionChecker->isOnlineOrLatestVersion($structureValue->getElement(), $structureValue->getVersion(), $valueBag->getLanguage(), $elementtype->getType())) {
-                    $subValues->addActiveValues($content);
+                    $subValues->addValues($content);
                 }
             }
 
@@ -167,13 +167,12 @@ class ElementSuggestFieldValueCollector implements ValueCollector
 
             $values->merge($subValues);
 
-            $this->logger->debug("Element Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
+            $this->logger->debug("Element Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | # Active <fg=green>{$subValues->count()}</>");
         }
 
         if (count($values)) {
-            $this->logger->info("Element Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
-            $this->logger->debug("Element Suggest Field | Active: ".json_encode($values->getActiveValues()));
-            $this->logger->debug("Element Suggest Field | Remove: ".json_encode($values->getRemoveValues()));
+            $this->logger->info("Element Suggest Field | # Active <fg=green>{$values->count()}</>");
+            $this->logger->debug("Element Suggest Field | Active: ".json_encode($values->getValues()));
         }
 
         return $values;

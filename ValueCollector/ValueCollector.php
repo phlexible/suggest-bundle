@@ -12,7 +12,7 @@
 namespace Phlexible\Bundle\SuggestBundle\ValueCollector;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 
 /**
  * Value collector.
@@ -26,7 +26,7 @@ interface ValueCollector
      *
      * @param DataSourceValueBag $valueBag
      *
-     * @return ValuesCollection
+     * @return ValueCollection
      */
     public function collect(DataSourceValueBag $valueBag);
 }

@@ -68,26 +68,26 @@ class GarbageCollectCommand extends ContainerAwareCommand
         $subjects = array();
 
         foreach ($results as $result) {
-            $cntActivate = $result->getValues()->countActiveValues();
-            $cntRemove = $result->getValues()->countRemoveValues();
+            $cntActive = count($result->getActiveValues());
+            $cntObsolete = count($result->getObsoleteValues());
 
             if ($pretend) {
                 $output->writeln(
-                    "[{$result->getDataSource()->getName()}, {$result->getLanguage()}] Would store $cntActivate active, "
-                    ."and remove $cntRemove values"
+                    "[{$result->getDataSource()->getTitle()}, {$result->getLanguage()}] Would store $cntActive active, "
+                    ."and remove $cntObsolete obsolete values"
                 );
 
                 if ($output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
-                    $output->writeln(' Active: '.json_encode($result->getValues()->getActiveValues()));
-                    $output->writeln(' Remove: '.json_encode($result->getValues()->getRemoveValues()));
+                    $output->writeln(' Active: '.json_encode($result->getActiveValues()->getValues()));
+                    $output->writeln(' Obsolete: '.json_encode($result->getObsoleteValues()->getValues()));
                 }
             } else {
-                $subject = "[{$result->getDataSource()->getName()}, {$result->getLanguage()}] Stored $cntActivate active, "
-                    ."and removed $cntRemove values";
+                $subject = "[{$result->getDataSource()->getTitle()}, {$result->getLanguage()}] Stored $cntActive active, "
+                    ."and removed $cntObsolete obsolete values";
 
                 $output->writeln($subject);
 
-                if ($cntActivate || $cntRemove) {
+                if ($cntActive || $cntObsolete) {
                     $subjects[] = $subject;
                 }
             }
