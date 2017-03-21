@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Phlexible\Bundle\SuggestBundle\Util;
+namespace Phlexible\Bundle\SuggestBundle\ValueCollector;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
 
 /**
- * Utility class for suggest fields.
+ * Value collector.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-interface Util
+interface ValueCollector
 {
     /**
      * Fetch values.
@@ -28,5 +28,5 @@ interface Util
      *
      * @return ValuesCollection
      */
-    public function fetchValues(DataSourceValueBag $valueBag);
+    public function collect(DataSourceValueBag $valueBag);
 }

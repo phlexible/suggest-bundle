@@ -254,35 +254,9 @@ class DataSource
      */
     public function getValuesForLanguage($language)
     {
-        return array_merge($this->getActiveValuesForLanguage($language), $this->getInactiveValuesForLanguage($language));
-    }
-
-    /**
-     * @param string $language
-     *
-     * @return array
-     */
-    public function getActiveValuesForLanguage($language)
-    {
         foreach ($this->valueBags as $value) {
             if ($value->getLanguage() === $language) {
-                return $value->getActiveValues();
-            }
-        }
-
-        return [];
-    }
-
-    /**
-     * @param string $language
-     *
-     * @return array
-     */
-    public function getInactiveValuesForLanguage($language)
-    {
-        foreach ($this->valueBags as $value) {
-            if ($value->getLanguage() === $language) {
-                return $value->getInactiveValues();
+                return $value->getValues();
             }
         }
 
@@ -297,7 +271,7 @@ class DataSource
      */
     public function setValues($language, array $values)
     {
-        return $this->setActiveValuesForLanguage($language, $values);
+        return $this->setValuesForLanguage($language, $values);
     }
 
     /**
@@ -332,24 +306,10 @@ class DataSource
      *
      * @return $this
      */
-    public function setActiveValuesForLanguage($language, array $values)
+    public function setValuesForLanguage($language, array $values)
     {
         $this->findValueBagForLanguage($language)
-            ->setActiveValues($values);
-
-        return $this;
-    }
-
-    /**
-     * @param string $language
-     * @param array  $values
-     *
-     * @return $this
-     */
-    public function setInactiveValuesForLanguage($language, array $values)
-    {
-        $this->findValueBagForLanguage($language)
-            ->setInactiveValues($values);
+            ->setValues($values);
 
         return $this;
     }
@@ -357,21 +317,13 @@ class DataSource
     /**
      * @param string $language
      * @param string $value
-     * @param bool   $active
      *
      * @return $this
      */
-    public function addValueForLanguage($language, $value, $active = true)
+    public function addValueForLanguage($language, $value)
     {
-        $valueBag = $this->findValueBagForLanguage($language);
-
-        if ($active) {
-            $valueBag->addActiveValue($value);
-            $valueBag->removeInactiveValue($value);
-        } else {
-            $valueBag->addInactiveValue($value);
-            $valueBag->removeActiveValue($value);
-        }
+        $this->findValueBagForLanguage($language)
+            ->addValue($value);
 
         return $this;
     }
@@ -389,50 +341,7 @@ class DataSource
         $valueBag = $this->findValueBagForLanguage($language);
 
         foreach ($values as $value) {
-            $valueBag->removeActiveValue($value);
-            $valueBag->removeInactiveValue($value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove keys from data source.
-     *
-     * @param string $language
-     * @param array  $values
-     *
-     * @return $this
-     */
-    public function deactivateValuesForLanguage($language, $values)
-    {
-        $valueBag = $this->findValueBagForLanguage($language);
-
-        foreach ($values as $value) {
-            if ($valueBag->hasActiveValue($value)) {
-                $valueBag->addInactiveValue($value);
-                $valueBag->removeActiveValue($value);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove keys from data source.
-     *
-     * @param string $language
-     * @param array  $values
-     *
-     * @return $this
-     */
-    public function activateValuesForLanguage($language, $values)
-    {
-        $valueBag = $this->findValueBagForLanguage($language);
-
-        foreach ($values as $value) {
-            $valueBag->addActiveValue($value);
-            $valueBag->removeInactiveValue($value);
+            $valueBag->removeValue($value);
         }
 
         return $this;

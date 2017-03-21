@@ -61,7 +61,7 @@ class MetaSetListener implements EventSubscriberInterface
         $dataSourceId = $metaField->getOptions();
         $dataSource = $this->dataSourceManager->find($dataSourceId);
         foreach (explode(',', $value->getValue()) as $singleValue) {
-            $dataSource->addValueForLanguage($value->getLanguage(), $singleValue, true);
+            $dataSource->addValueForLanguage($value->getLanguage(), $singleValue);
         }
         $this->dataSourceManager->updateDataSource($dataSource);
     }

@@ -28,24 +28,17 @@ class ValuesCollection implements Countable
     /**
      * @var array
      */
-    private $inactiveValues = [];
-
-    /**
-     * @var array
-     */
     private $removeValues = [];
 
     /**
      * ValuesCollection constructor.
      *
      * @param array $activeValues
-     * @param array $inactiveValues
      * @param array $removeValues
      */
-    public function __construct($activeValues = [], $inactiveValues = [], $removeValues = [])
+    public function __construct($activeValues = [], $removeValues = [])
     {
         $this->addActiveValues($activeValues);
-        $this->addInactiveValues($inactiveValues);
         $this->addRemoveValues($removeValues);
     }
 
@@ -58,9 +51,11 @@ class ValuesCollection implements Countable
     {
         $value = trim($value);
 
-        if ($value && !in_array($value, $this->activeValues)) {
+        if ($value && !$this->hasActiveValue($value)) {
             $this->activeValues[] = $value;
         }
+
+        $this->removeRemoveValue($value);
 
         return $this;
     }
@@ -100,7 +95,7 @@ class ValuesCollection implements Countable
      */
     public function removeActiveValue($value)
     {
-        if (in_array($value, $this->activeValues)) {
+        if ($this->hasActiveValue($value)) {
             unset($this->activeValues[array_search($value, $this->activeValues)]);
         }
 
@@ -130,6 +125,16 @@ class ValuesCollection implements Countable
     }
 
     /**
+     * @param string $value
+     *
+     * @return bool
+     */
+    public function hasActiveValue($value)
+    {
+        return in_array($value, $this->activeValues);
+    }
+
+    /**
      * @return int
      */
     public function countActiveValues()
@@ -142,101 +147,11 @@ class ValuesCollection implements Countable
      *
      * @return $this
      */
-    public function addInactiveValue($value)
-    {
-        $value = trim($value);
-
-        if ($value && !in_array($value, $this->inactiveValues)) {
-            $this->inactiveValues[] = $value;
-        }
-
-        $this->inactiveValues = array_diff($this->inactiveValues, $this->activeValues);
-
-        return $this;
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return $this
-     */
-    public function addInactiveValues($values)
-    {
-        foreach ($values as $value) {
-            $this->addInactiveValue($value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return $this
-     */
-    public function setInactiveValues($values)
-    {
-        $this->inactiveValues = [];
-
-        $this->addInactiveValues($values);
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function removeInactiveValue($value)
-    {
-        if (in_array($value, $this->inactiveValues)) {
-            unset($this->inactiveValues[array_search($value, $this->inactiveValues)]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return $this
-     */
-    public function removeInactiveValues($values)
-    {
-        foreach ($values as $value) {
-            $this->removeInactiveValue($value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getInactiveValues()
-    {
-        return $this->inactiveValues;
-    }
-
-    /**
-     * @return int
-     */
-    public function countInactiveValues()
-    {
-        return count($this->inactiveValues);
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
     public function addRemoveValue($value)
     {
         $value = trim($value);
 
-        if ($value && !in_array($value, $this->removeValues)) {
+        if ($value && !$this->hasRemoveValue($value) && !$this->hasActiveValue($value)) {
             $this->removeValues[] = $value;
         }
 
@@ -278,7 +193,7 @@ class ValuesCollection implements Countable
      */
     public function removeRemoveValue($value)
     {
-        if (in_array($value, $this->removeValues)) {
+        if ($this->hasRemoveValue($value)) {
             unset($this->removeValues[array_search($value, $this->removeValues)]);
         }
 
@@ -308,6 +223,16 @@ class ValuesCollection implements Countable
     }
 
     /**
+     * @param string $value
+     *
+     * @return bool
+     */
+    public function hasRemoveValue($value)
+    {
+        return in_array($value, $this->removeValues);
+    }
+
+    /**
      * @return int
      */
     public function countRemoveValues()
@@ -323,7 +248,6 @@ class ValuesCollection implements Countable
     public function merge(ValuesCollection $values)
     {
         $this->addActiveValues($values->getActiveValues());
-        $this->addInactiveValues($values->getInactiveValues());
         $this->addRemoveValues($values->getRemoveValues());
 
         return $this;
@@ -334,6 +258,6 @@ class ValuesCollection implements Countable
      */
     public function count()
     {
-        return $this->countActiveValues() + $this->countInactiveValues() + $this->countRemoveValues();
+        return $this->countActiveValues() + $this->countRemoveValues();
     }
 }

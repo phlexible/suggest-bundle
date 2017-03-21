@@ -38,16 +38,10 @@ class DataSourceValueBag
     private $language;
 
     /**
-     * @var string
-     * @ORM\Column(name="active_values", type="json_array")
+     * @var array
+     * @ORM\Column(name="values", type="json_array")
      */
-    private $activeValues = [];
-
-    /**
-     * @var string
-     * @ORM\Column(name="inactive_values", type="json_array")
-     */
-    private $inactiveValues = [];
+    private $values = [];
 
     /**
      * @var DataSource
@@ -99,129 +93,61 @@ class DataSourceValueBag
     /**
      * @return array
      */
-    public function getActiveValues()
-    {
-        return array_values($this->activeValues);
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return $this
-     */
-    public function setActiveValues(array $values)
-    {
-        $this->activeValues = $values;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function addActiveValue($value)
-    {
-        if (!$this->hasActiveValue($value)) {
-            $this->activeValues[] = $value;
-            sort($this->activeValues);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return bool
-     */
-    public function hasActiveValue($value)
-    {
-        return in_array($value, $this->activeValues);
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function removeActiveValue($value)
-    {
-        if ($this->hasActiveValue($value)) {
-            unset($this->activeValues[array_search($value, $this->activeValues)]);
-            sort($this->activeValues);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getInactiveValues()
-    {
-        return array_values($this->inactiveValues);
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return $this
-     */
-    public function setInactiveValues(array $values)
-    {
-        $this->inactiveValues = $values;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function addInactiveValue($value)
-    {
-        if (!$this->hasInactiveValue($value)) {
-            $this->inactiveValues[] = $value;
-            sort($this->inactiveValues);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return bool
-     */
-    public function hasInactiveValue($value)
-    {
-        return in_array($value, $this->inactiveValues);
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function removeInactiveValue($value)
-    {
-        if ($this->hasInactiveValue($value)) {
-            unset($this->inactiveValues[array_search($value, $this->inactiveValues)]);
-            sort($this->inactiveValues);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
     public function getValues()
     {
-        return array_merge($this->getActiveValues(), $this->getInactiveValues());
+        return array_values($this->values);
+    }
+
+    /**
+     * @param array $values
+     *
+     * @return $this
+     */
+    public function setValues(array $values)
+    {
+        $this->values = $values;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function addValue($value)
+    {
+        if (!$this->hasValue($value)) {
+            $this->values[] = $value;
+            sort($this->values);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return bool
+     */
+    public function hasValue($value)
+    {
+        return in_array($value, $this->values);
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function removeValue($value)
+    {
+        if ($this->hasValue($value)) {
+            unset($this->values[array_search($value, $this->values)]);
+            sort($this->values);
+        }
+
+        return $this;
     }
 
     /**

@@ -9,25 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace Phlexible\Bundle\SuggestBundle\Util;
+namespace Phlexible\Bundle\SuggestBundle\ValueCollector;
 
-use Phlexible\Bundle\ElementBundle\Entity\ElementMetaDataValue;
-use Phlexible\Bundle\ElementtypeBundle\Model\Elementtype;
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
-use Phlexible\Bundle\TeaserBundle\Model\TeaserManagerInterface;
-use Phlexible\Bundle\TreeBundle\ContentTree\ContentTreeManagerInterface;
+use Phlexible\Bundle\SuggestBundle\Util\ElementVersionChecker;
+use Phlexible\Bundle\SuggestBundle\Util\ValueSplitter;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaSetField;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Utility class for suggest fields.
+ * Utility class for element meta suggest fields.
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class ElementMetaSuggestFieldUtil implements Util
+class ElementMetaSuggestFieldValueCollector implements ValueCollector
 {
     /**
      * @var MetaSetManagerInterface
@@ -40,14 +38,9 @@ class ElementMetaSuggestFieldUtil implements Util
     private $metaDataManager;
 
     /**
-     * @var ContentTreeManagerInterface
+     * @var ElementVersionChecker
      */
-    private $treeManager;
-
-    /**
-     * @var TeaserManagerInterface
-     */
-    private $teaserManager;
+    private $versionChecker;
 
     /**
      * @var LoggerInterface
@@ -60,25 +53,22 @@ class ElementMetaSuggestFieldUtil implements Util
     private $splitter;
 
     /**
-     * @param MetaSetManagerInterface     $metaSetManager
-     * @param MetaDataManagerInterface    $metaDataManager
-     * @param ContentTreeManagerInterface $treeManager
-     * @param TeaserManagerInterface      $teaserManager
-     * @param LoggerInterface             $logger
-     * @param string                      $separatorChar
+     * @param MetaSetManagerInterface  $metaSetManager
+     * @param MetaDataManagerInterface $metaDataManager
+     * @param ElementVersionChecker    $versionChecker
+     * @param LoggerInterface          $logger
+     * @param string                   $separatorChar
      */
     public function __construct(
         MetaSetManagerInterface $metaSetManager,
         MetaDataManagerInterface $metaDataManager,
-        ContentTreeManagerInterface $treeManager,
-        TeaserManagerInterface $teaserManager,
+        ElementVersionChecker $versionChecker,
         LoggerInterface $logger,
         $separatorChar
     ) {
         $this->metaSetManager = $metaSetManager;
         $this->metaDataManager = $metaDataManager;
-        $this->treeManager = $treeManager;
-        $this->teaserManager = $teaserManager;
+        $this->versionChecker = $versionChecker;
         $this->logger = $logger;
         $this->splitter = new ValueSplitter($separatorChar);
     }
@@ -90,7 +80,7 @@ class ElementMetaSuggestFieldUtil implements Util
      *
      * @return ValuesCollection
      */
-    public function fetchValues(DataSourceValueBag $valueBag)
+    public function collect(DataSourceValueBag $valueBag)
     {
         $metaSets = $this->metaSetManager->findAll();
 
@@ -126,10 +116,8 @@ class ElementMetaSuggestFieldUtil implements Util
                     continue;
                 }
 
-                if ($this->isOnline($metaDataValue)) {
+                if ($this->versionChecker->isOnlineOrLatestVersion($metaDataValue->getElementVersion()->getElement(), $metaDataValue->getElementVersion()->getVersion(), $valueBag->getLanguage(), $metaDataValue->getElementVersion()->getElementSource()->getType())) {
                     $subValues->addActiveValues($suggestValues);
-                } else {
-                    $subValues->addInactiveValues($suggestValues);
                 }
             }
 
@@ -139,54 +127,15 @@ class ElementMetaSuggestFieldUtil implements Util
 
             $values->merge($subValues);
 
-            $this->logger->debug("Element Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Inactive <fg=yellow>{$subValues->countInactiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
+            $this->logger->debug("Element Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
         }
 
         if (count($values)) {
-            $this->logger->info("Element Meta Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Inactive <fg=yellow>{$values->countInactiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
+            $this->logger->info("Element Meta Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
             $this->logger->debug("Element Meta Suggest Field | Active: ".json_encode($values->getActiveValues()));
-            $this->logger->debug("Element Meta Suggest Field | Inactive: ".json_encode($values->getInactiveValues()));
             $this->logger->debug("Element Meta Suggest Field | Remove: ".json_encode($values->getRemoveValues()));
         }
 
         return $values;
-    }
-
-    /**
-     * @param ElementMetaDataValue $metaDataValue
-     *
-     * @return bool
-     */
-    private function isOnline(ElementMetaDataValue $metaDataValue)
-    {
-        $elementVersion = $metaDataValue->getElementVersion();
-        $element = $elementVersion->getElement();
-        $elementSource = $elementVersion->getElementSource();
-
-        if ($elementSource->getType() === Elementtype::TYPE_PART) {
-            foreach ($this->teaserManager->findBy(array('typeId' => $element->getEid())) as $teaser) {
-                if ($this->teaserManager->getPublishedVersion(
-                        $teaser,
-                        $metaDataValue->getLanguage()
-                    ) === $elementVersion->getVersion()
-                ) {
-                    return true;
-                }
-            }
-        } else {
-            foreach ($this->treeManager->findAll() as $tree) {
-                foreach ($tree->getByTypeId($element->getEid()) as $node) {
-                    if ($tree->getPublishedVersion(
-                            $node,
-                            $metaDataValue->getLanguage()
-                        ) === $elementVersion->getVersion()
-                    ) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 }

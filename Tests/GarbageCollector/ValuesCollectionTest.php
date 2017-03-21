@@ -52,35 +52,6 @@ class ValuesCollectionTest extends TestCase
         $this->assertCount(1, $values->getActiveValues());
     }
 
-    public function testAddInactiveValue()
-    {
-        $values = new ValuesCollection();
-
-        $values->addInactiveValue('test1');
-        $values->addInactiveValue('test2');
-
-        $this->assertCount(2, $values->getInactiveValues());
-    }
-
-    public function testAddInactivesValue()
-    {
-        $values = new ValuesCollection();
-
-        $values->addInactiveValues(array('test1', 'test2'));
-
-        $this->assertCount(2, $values->getInactiveValues());
-    }
-
-    public function testAddInactiveValueDoesNotAddDuplicates()
-    {
-        $values = new ValuesCollection();
-
-        $values->addInactiveValue('test');
-        $values->addInactiveValue('test');
-
-        $this->assertCount(1, $values->getInactiveValues());
-    }
-
     public function testAddRemoveValue()
     {
         $values = new ValuesCollection();

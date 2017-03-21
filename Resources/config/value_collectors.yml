@@ -1,0 +1,58 @@
+services:
+    phlexible_suggest.value_collector:
+        class: Phlexible\Bundle\SuggestBundle\ValueCollector\ChainValueCollector
+        arguments:
+            -
+                - "@phlexible_suggest.element_suggest_field_value_collector"
+                - "@phlexible_suggest.element_meta_suggest_field_value_collector"
+                - "@phlexible_suggest.folder_meta_suggest_field_value_collector"
+                - "@phlexible_suggest.file_meta_suggest_field_value_collector"
+
+    phlexible_suggest.element_suggest_field_value_collector:
+        class: Phlexible\Bundle\SuggestBundle\ValueCollector\ElementSuggestFieldValueCollector
+        arguments:
+            - "@phlexible_meta_set.meta_set_manager"
+            - "@phlexible_element.element_service"
+            - "@phlexible_element.element_source_manager"
+            - "@phlexible_suggest.element_version_checker"
+            - "@logger"
+            - "%phlexible_suggest.suggest_separator%"
+        tags:
+            - {name: phlexible_suggest.value_collector}
+            - {name: monolog.logger, channel: suggest}
+
+    phlexible_suggest.element_meta_suggest_field_value_collector:
+        class: Phlexible\Bundle\SuggestBundle\ValueCollector\ElementMetaSuggestFieldValueCollector
+        arguments:
+            - "@phlexible_meta_set.meta_set_manager"
+            - "@phlexible_element.element_meta_data_manager"
+            - "@phlexible_suggest.element_version_checker"
+            - "@logger"
+            - "%phlexible_suggest.suggest_separator%"
+        tags:
+            - {name: phlexible_suggest.value_collector}
+            - {name: monolog.logger, channel: suggest}
+
+    phlexible_suggest.folder_meta_suggest_field_value_collector:
+        class: Phlexible\Bundle\SuggestBundle\ValueCollector\MediaMetaSuggestFieldValueCollector
+        arguments:
+            - "@phlexible_meta_set.meta_set_manager"
+            - "@phlexible_media_manager.folder_meta_data_manager"
+            - "@logger"
+            - "%phlexible_suggest.suggest_separator%"
+            - "Folder"
+        tags:
+            - {name: phlexible_suggest.value_collector}
+            - {name: monolog.logger, channel: suggest}
+
+    phlexible_suggest.file_meta_suggest_field_value_collector:
+        class: Phlexible\Bundle\SuggestBundle\ValueCollector\MediaMetaSuggestFieldValueCollector
+        arguments:
+            - "@phlexible_meta_set.meta_set_manager"
+            - "@phlexible_media_manager.file_meta_data_manager"
+            - "@logger"
+            - "%phlexible_suggest.suggest_separator%"
+            - "File"
+        tags:
+            - {name: phlexible_suggest.value_collector}
+            - {name: monolog.logger, channel: suggest}

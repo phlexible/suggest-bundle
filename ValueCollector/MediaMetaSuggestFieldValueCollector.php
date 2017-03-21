@@ -9,21 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Phlexible\Bundle\SuggestBundle\Util;
+namespace Phlexible\Bundle\SuggestBundle\ValueCollector;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValuesCollection;
+use Phlexible\Bundle\SuggestBundle\Util\ValueSplitter;
 use Phlexible\Component\MetaSet\Model\MetaDataManagerInterface;
 use Phlexible\Component\MetaSet\Model\MetaSetField;
 use Phlexible\Component\MetaSet\Model\MetaSetManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Utility class for suggest fields.
+ * Utility class for media meta suggest fields.
  *
  * @author Phillip Look <pl@brainbits.net>
  */
-class MediaMetaSuggestFieldUtil implements Util
+class MediaMetaSuggestFieldValueCollector implements ValueCollector
 {
     /**
      * @var MetaSetManagerInterface
@@ -73,7 +74,7 @@ class MediaMetaSuggestFieldUtil implements Util
      *
      * @return ValuesCollection
      */
-    public function fetchValues(DataSourceValueBag $valueBag)
+    public function collect(DataSourceValueBag $valueBag)
     {
         $metaSets = $this->metaSetManager->findAll();
 
@@ -109,11 +110,7 @@ class MediaMetaSuggestFieldUtil implements Util
                     continue;
                 }
 
-                if ($this->isOnline($metaDataValue)) {
-                    $subValues->addActiveValues($suggestValues);
-                } else {
-                    $subValues->addInactiveValues($suggestValues);
-                }
+                $subValues->addActiveValues($suggestValues);
             }
 
             if (!count($subValues)) {
@@ -122,26 +119,15 @@ class MediaMetaSuggestFieldUtil implements Util
 
             $values->merge($subValues);
 
-            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Inactive <fg=yellow>{$subValues->countInactiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
+            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Memory: ".number_format(memory_get_usage(true)/1024/1024, 2)." MB | Active <fg=green>{$subValues->countActiveValues()}</> | Remove <fg=red>{$subValues->countRemoveValues()}</>");
         }
 
         if (count($values)) {
-            $this->logger->info("{$this->typeHint} Meta Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Inactive <fg=yellow>{$values->countInactiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
+            $this->logger->info("{$this->typeHint} Meta Suggest Field | Active <fg=green>{$values->countActiveValues()}</> | Remove <fg=red>{$values->countRemoveValues()}</>");
             $this->logger->debug("{$this->typeHint} Meta Suggest Field | Active: ".json_encode($values->getActiveValues()));
-            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Inactive: ".json_encode($values->getInactiveValues()));
             $this->logger->debug("{$this->typeHint} Meta Suggest Field | Remove: ".json_encode($values->getRemoveValues()));
         }
 
         return $values;
-    }
-
-    /**
-     * @param mixed $metaDataValue
-     *
-     * @return bool
-     */
-    private function isOnline($metaDataValue)
-    {
-        return true;
     }
 }

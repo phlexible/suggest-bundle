@@ -16,6 +16,7 @@ use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
 use Phlexible\Bundle\SuggestBundle\Event\GarbageCollectEvent;
 use Phlexible\Bundle\SuggestBundle\Model\DataSourceManagerInterface;
 use Phlexible\Bundle\SuggestBundle\SuggestEvents;
+use Phlexible\Bundle\SuggestBundle\ValueCollector\ValueCollector;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -27,14 +28,15 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class GarbageCollector
 {
-    const MODE_REMOVE_UNUSED = 'remove_unused';
-    const MODE_REMOVE_UNUSED_AND_INACTIVE = 'remove_unused_inactive';
-    const MODE_MARK_UNUSED_INACTIVE = 'inactive';
-
     /**
      * @var DataSourceManagerInterface
      */
     private $dataSourceManager;
+
+    /**
+     * @var ValueCollector
+     */
+    private $valueCollector;
 
     /**
      * @var EventDispatcherInterface
@@ -48,12 +50,14 @@ class GarbageCollector
 
     /**
      * @param DataSourceManagerInterface $dataSourceManager
+     * @param ValueCollector             $valueCollector
      * @param EventDispatcherInterface   $dispatcher
      * @param LoggerInterface            $logger
      */
-    public function __construct(DataSourceManagerInterface $dataSourceManager, EventDispatcherInterface $dispatcher, LoggerInterface $logger)
+    public function __construct(DataSourceManagerInterface $dataSourceManager, ValueCollector $valueCollector, EventDispatcherInterface $dispatcher, LoggerInterface $logger)
     {
         $this->dataSourceManager = $dataSourceManager;
+        $this->valueCollector = $valueCollector;
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
     }
@@ -61,121 +65,89 @@ class GarbageCollector
     /**
      * Start garbage collection.
      *
-     * @param string $mode
-     * @param bool   $pretend
+     * @param bool $pretend
      *
      * @return array
      */
-    public function run($mode = self::MODE_MARK_UNUSED_INACTIVE, $pretend = false)
+    public function run($pretend = false)
     {
-        $nums = [];
+        $results = [];
 
         $limit = 10;
         $offset = 0;
 
         foreach ($this->dataSourceManager->findBy([], null, $limit, $offset) as $dataSource) {
-            $nums = array_merge($nums, $this->runDataSource($dataSource, $mode, $pretend));
+            $results = array_merge($results, $this->runDataSource($dataSource, $pretend));
 
             $offset += $limit;
         }
 
-        return $nums;
+        return $results;
     }
 
     /**
      * Start garbage collection.
      *
      * @param DataSource $dataSource
-     * @param string     $mode
      * @param bool       $pretend
      *
-     * @return array
+     * @return ValueResult[]
      */
-    public function runDataSource(DataSource $dataSource, $mode = self::MODE_MARK_UNUSED_INACTIVE, $pretend = false)
+    public function runDataSource(DataSource $dataSource, $pretend = false)
     {
-        $nums = [];
+        $results = [];
 
         foreach ($dataSource->getValueBags() as $values) {
             $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> / Language <fg=cyan>{$values->getLanguage()}</>");
 
-            $result = $this->garbageCollect($values, $mode, $pretend);
+            $collectedValues = $this->garbageCollect($values, $pretend);
 
-            $nums[$dataSource->getTitle()][$values->getLanguage()] = $result;
+            $results[] = new ValueResult($dataSource, $values->getLanguage(), $collectedValues);
 
-            $this->logger->notice("Garbage Collector | Active <fg=green>{$result->countActiveValues()}</> | Inactive <fg=yellow>{$result->countInactiveValues()}</> | Remove <fg=red>{$result->countRemoveValues()}</>");
-            $this->logger->info("Garbage Collector | Active: ".json_encode($result->getActiveValues()));
-            $this->logger->info("Garbage Collector | Inactive: ".json_encode($result->getInactiveValues()));
-            $this->logger->info("Garbage Collector | Remove: ".json_encode($result->getRemoveValues()));
+            $this->logger->notice("Garbage Collector | Active <fg=green>{$collectedValues->countActiveValues()}</> | Remove <fg=red>{$collectedValues->countRemoveValues()}</>");
+            $this->logger->info("Garbage Collector | Active: ".json_encode($collectedValues->getActiveValues()));
+            $this->logger->info("Garbage Collector | Remove: ".json_encode($collectedValues->getRemoveValues()));
         }
 
         if (!$pretend) {
             $this->dataSourceManager->updateDataSource($dataSource);
         }
 
-        return $nums;
+        return $results;
     }
 
     /**
      * @param DataSourceValueBag $valueBag
-     * @param string             $mode
      * @param bool               $pretend
      *
      * @return ValuesCollection
      */
-    private function garbageCollect(DataSourceValueBag $valueBag, $mode, $pretend = false)
+    private function garbageCollect(DataSourceValueBag $valueBag, $pretend = false)
     {
         $event = new GarbageCollectEvent($valueBag);
         if ($this->dispatcher->dispatch(SuggestEvents::BEFORE_GARBAGE_COLLECT, $event)->isPropagationStopped()) {
-            return new ValuesCollection();
+            return null;
         }
 
-        $collectedValues = $event->getCollectedValues();
+        $collectedValues = $this->valueCollector->collect($valueBag);
         $activeValues = $collectedValues->getActiveValues();
-        $inactiveValues = $collectedValues->getInactiveValues();
 
-        //dump('raw active', $activeValues);dump('raw inactive', $inactiveValues);exit;
+        $existingValues = $valueBag->getValues();
 
-        $values = $valueBag->getValues();
-
-        $activeValues = array_values(array_unique($activeValues));
-        $removeValues = array_values(array_unique(array_diff($values, $activeValues, $inactiveValues)));
-        $inactiveValues = array_values(array_unique(array_diff($inactiveValues, $activeValues)));
-
-        //dump('remove', $removeValues);dump('active', $activeValues);dump('inactive', $inactiveValues);exit;
-
-        // for MODE_REMOVE_UNUSED is no change necessary
-        if ($mode === self::MODE_MARK_UNUSED_INACTIVE) {
-            $inactiveValues = array_merge($inactiveValues, $removeValues);
-            sort($inactiveValues);
-            $removeValues = [];
-        } elseif ($mode === self::MODE_REMOVE_UNUSED_AND_INACTIVE) {
-            $removeValues = array_merge($removeValues, $inactiveValues);
-            sort($removeValues);
-            $inactiveValues = [];
-        }
+        $removeValues = array_values(array_unique(array_diff($existingValues, $activeValues)));
 
         if (!$pretend) {
             if (count($removeValues)) {
                 // apply changes if there is changeable data
                 foreach ($removeValues as $value) {
-                    $valueBag->removeActiveValue($value);
-                    $valueBag->removeInactiveValue($value);
+                    $valueBag->removeValue($value);
                 }
             }
 
             if (count($activeValues)) {
                 // apply changes if there is changeable data
                 foreach ($activeValues as $value) {
-                    $valueBag->addActiveValue($value);
-                    $valueBag->removeInactiveValue($value);
-                }
-            }
-
-            if (count($inactiveValues)) {
-                // apply changes if there is changeable data
-                foreach ($inactiveValues as $value) {
-                    $valueBag->addInactiveValue($value);
-                    $valueBag->removeActiveValue($value);
+                    $valueBag->addValue($value);
                 }
             }
         }
@@ -183,6 +155,6 @@ class GarbageCollector
         $event = new GarbageCollectEvent($valueBag);
         $this->dispatcher->dispatch(SuggestEvents::GARBAGE_COLLECT, $event);
 
-        return new ValuesCollection($activeValues, $inactiveValues, $removeValues);
+        return new ValuesCollection($activeValues, $removeValues);
     }
 }

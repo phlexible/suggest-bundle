@@ -60,48 +60,42 @@ class GarbageCollectCommand extends ContainerAwareCommand
                 return 1;
             }
 
-            $stats = $gc->runDataSource($dataSource, 0, $pretend);
+            $results = $gc->runDataSource($dataSource, $pretend);
         } else {
-            $stats = $gc->run(0, $pretend);
+            $results = $gc->run($pretend);
         }
 
         $subjects = array();
 
-        foreach ($stats as $name => $langs) {
-            foreach ($langs as $lang => $values) {
-                $cntActivate = $values->countActiveValues();
-                $cntInactive = $values->countInactiveValues();
-                $cntRemove = $values->countRemoveValues();
+        foreach ($results as $result) {
+            $cntActivate = $result->getValues()->countActiveValues();
+            $cntRemove = $result->getValues()->countRemoveValues();
 
-                if ($pretend) {
-                    $output->writeln(
-                        "[$name, $lang] Would store $cntActivate active, "
-                        ."store $cntInactive inactive "
-                        ."and remove $cntRemove values"
-                    );
+            if ($pretend) {
+                $output->writeln(
+                    "[{$result->getDataSource()->getName()}, {$result->getLanguage()}] Would store $cntActivate active, "
+                    ."and remove $cntRemove values"
+                );
 
-                    if ($output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
-                        $output->writeln(' Active: '.json_encode($values->getActiveValues()));
-                        $output->writeln(' Inactive: '.json_encode($values->getInactiveValues()));
-                        $output->writeln(' Remove: '.json_encode($values->getRemoveValues()));
-                    }
-                } else {
-                    $subject = "[$name, $lang] Stored $cntActivate active, "
-                        ."stored $cntInactive inactive "
-                        ."and removed $cntRemove values";
+                if ($output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
+                    $output->writeln(' Active: '.json_encode($result->getValues()->getActiveValues()));
+                    $output->writeln(' Remove: '.json_encode($result->getValues()->getRemoveValues()));
+                }
+            } else {
+                $subject = "[{$result->getDataSource()->getName()}, {$result->getLanguage()}] Stored $cntActivate active, "
+                    ."and removed $cntRemove values";
 
-                    $output->writeln($subject);
+                $output->writeln($subject);
 
-                    if ($cntActivate || $cntInactive || $cntRemove) {
-                        $subjects[] = $subject;
-                    }
+                if ($cntActivate || $cntRemove) {
+                    $subjects[] = $subject;
                 }
             }
         }
 
         if (!$pretend && count($subjects)) {
             $message = SuggestMessage::create(
-                'Garbage collection run on '.count($stats).' data sources.',
+                'Garbage collection run on '.count($results).' data sources / languages.',
                 implode(PHP_EOL, $subjects)
             );
             $messagePoster->post($message);
