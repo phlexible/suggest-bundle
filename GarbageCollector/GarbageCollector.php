@@ -117,11 +117,11 @@ class GarbageCollector
     /**
      * @param DataSource         $dataSource
      * @param DataSourceValueBag $dataSourceValues
-     * @param bool               $pretend
+     * @param bool               $commit
      *
      * @return ValueResult
      */
-    private function garbageCollect(DataSource $dataSource, DataSourceValueBag $dataSourceValues, $pretend = false)
+    private function garbageCollect(DataSource $dataSource, DataSourceValueBag $dataSourceValues, $commit = false)
     {
         $event = new GarbageCollectEvent($dataSourceValues);
         if ($this->dispatcher->dispatch(SuggestEvents::BEFORE_GARBAGE_COLLECT, $event)->isPropagationStopped()) {
@@ -136,16 +136,16 @@ class GarbageCollector
         $obsoleteValues = array_values(array_unique(array_diff($existingValues, $activeValues)));
         $existingValues = array_values(array_unique(array_diff($existingValues, $obsoleteValues)));
 
-        if (!$pretend) {
+        if ($commit) {
             if (count($obsoleteValues)) {
-                foreach ($obsoleteValues as $value) {
-                    $dataSourceValues->removeValue($value);
+                foreach ($obsoleteValues as $obsoleteValue) {
+                    $dataSourceValues->removeValue($obsoleteValue);
                 }
             }
 
-            if (count($activeValues)) {
-                foreach ($activeValues as $value) {
-                    $dataSourceValues->addValue($value);
+            if (count($newValues)) {
+                foreach ($newValues as $newValue) {
+                    $dataSourceValues->addValue($newValue);
                 }
             }
         }
