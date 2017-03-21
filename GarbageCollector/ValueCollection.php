@@ -35,6 +35,19 @@ class ValueCollection implements Countable
 
     /**
      * @param string $value
+     * @param int    $count
+     */
+    private function incValue($value, $count = 1)
+    {
+        if (!isset($this->values[$value])) {
+            $this->values[$value] = 0;
+        }
+
+        $this->values[$value] += $count;
+    }
+
+    /**
+     * @param string $value
      *
      * @return $this
      */
@@ -42,8 +55,8 @@ class ValueCollection implements Countable
     {
         $value = trim($value);
 
-        if ($value && !$this->hasValue($value)) {
-            $this->values[] = $value;
+        if ($value) {
+            $this->incValue($value);
         }
 
         return $this;
@@ -110,6 +123,14 @@ class ValueCollection implements Countable
      */
     public function getValues()
     {
+        return array_keys($this->values);
+    }
+
+    /**
+     * @return array
+     */
+    public function getValuesWithCount()
+    {
         return $this->values;
     }
 
@@ -120,7 +141,7 @@ class ValueCollection implements Countable
      */
     public function hasValue($value)
     {
-        return in_array($value, $this->values);
+        return isset($this->values[$value]);
     }
 
     /**
@@ -130,7 +151,9 @@ class ValueCollection implements Countable
      */
     public function merge(ValueCollection $values)
     {
-        $this->addValues($values->getValues());
+        foreach ($values->getValuesWithCount() as $value => $count) {
+            $this->incValue($value, $count);
+        }
 
         return $this;
     }

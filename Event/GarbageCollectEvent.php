@@ -12,7 +12,6 @@
 namespace Phlexible\Bundle\SuggestBundle\Event;
 
 use Phlexible\Bundle\SuggestBundle\Entity\DataSourceValueBag;
-use Phlexible\Bundle\SuggestBundle\GarbageCollector\ValueCollection;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -28,18 +27,11 @@ class GarbageCollectEvent extends Event
     private $values;
 
     /**
-     * @var ValueCollection
-     */
-    private $collectedValues;
-
-    /**
      * @param DataSourceValueBag $values
      */
     public function __construct(DataSourceValueBag $values)
     {
         $this->values = $values;
-
-        $this->collectedValues = new ValueCollection();
     }
 
     /**
@@ -48,61 +40,5 @@ class GarbageCollectEvent extends Event
     public function getDataSourceValueBag()
     {
         return $this->values;
-    }
-
-    /**
-     * @return ValueCollection
-     */
-    public function getCollectedValues()
-    {
-        return $this->collectedValues;
-    }
-
-    /**
-     * @param string|array $values
-     *
-     * @return $this
-     */
-    public function markActive($values)
-    {
-        if (is_array($values)) {
-            $this->collectedValues->addValues($values);
-        } else {
-            $this->collectedValues->addValue($values);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getActiveValues()
-    {
-        return $this->collectedValues->getValues();
-    }
-
-    /**
-     * @param string|array $values
-     *
-     * @return $this
-     */
-    public function markInactive($values)
-    {
-        if (is_array($values)) {
-            $this->collectedValues->addInactiveValues($values);
-        } else {
-            $this->collectedValues->addInactiveValue($values);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getInactiveValues()
-    {
-        return $this->collectedValues->getInactiveValues();
     }
 }

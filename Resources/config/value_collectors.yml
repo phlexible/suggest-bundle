@@ -12,7 +12,7 @@ services:
         class: Phlexible\Bundle\SuggestBundle\ValueCollector\ElementSuggestFieldValueCollector
         arguments:
             - "@phlexible_meta_set.meta_set_manager"
-            - "@phlexible_element.element_service"
+            - "@doctrine.orm.default_entity_manager"
             - "@phlexible_element.element_source_manager"
             - "@phlexible_suggest.element_version_checker"
             - "@logger"

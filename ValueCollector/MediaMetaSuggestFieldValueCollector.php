@@ -104,6 +104,10 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
             $subValues = new ValueCollection();
 
             foreach ($metaDataValues as $metaDataValue) {
+                if ($metaDataValue->getLanguage() !== $valueBag->getLanguage()) {
+                    continue;
+                }
+
                 $suggestValues = $this->splitter->split($metaDataValue->getValue());
 
                 if (!count($suggestValues)) {
@@ -124,7 +128,7 @@ class MediaMetaSuggestFieldValueCollector implements ValueCollector
 
         if (count($values)) {
             $this->logger->info("{$this->typeHint} Meta Suggest Field | # Active <fg=green>{$values->count()}</>");
-            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Active: ".json_encode($values->getValues()));
+            $this->logger->debug("{$this->typeHint} Meta Suggest Field | Active: ".json_encode($values->getValuesWithCount()));
         }
 
         return $values;

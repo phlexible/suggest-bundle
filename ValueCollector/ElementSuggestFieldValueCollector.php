@@ -11,7 +11,8 @@
 
 namespace Phlexible\Bundle\SuggestBundle\ValueCollector;
 
-use Phlexible\Bundle\ElementBundle\ElementService;
+use Doctrine\ORM\EntityManagerInterface;
+use Phlexible\Bundle\ElementBundle\Entity\ElementStructureValue;
 use Phlexible\Bundle\ElementBundle\Model\ElementSourceManagerInterface;
 use Phlexible\Bundle\ElementtypeBundle\Model\Elementtype;
 use Phlexible\Bundle\ElementtypeBundle\Model\ElementtypeStructureNode;
@@ -36,9 +37,9 @@ class ElementSuggestFieldValueCollector implements ValueCollector
     private $metaSetManager;
 
     /**
-     * @var ElementService
+     * @var EntityManagerInterface
      */
-    private $elementService;
+    private $entityManager;
 
     /**
      * @var ElementSourceManagerInterface
@@ -62,20 +63,20 @@ class ElementSuggestFieldValueCollector implements ValueCollector
 
     /**
      * @param MetaSetManagerInterface       $metaSetManager
-     * @param ElementService                $elementService
+     * @param EntityManagerInterface        $entityManager
      * @param ElementSourceManagerInterface $elementSourceManager
      * @param ElementVersionChecker         $versionChecker
      * @param LoggerInterface               $logger
      */
     public function __construct(
         MetaSetManagerInterface $metaSetManager,
-        ElementService $elementService,
+        EntityManagerInterface $entityManager,
         ElementSourceManagerInterface $elementSourceManager,
         ElementVersionChecker $versionChecker,
         LoggerInterface $logger
     ) {
         $this->metaSetManager = $metaSetManager;
-        $this->elementService = $elementService;
+        $this->entityManager = $entityManager;
         $this->elementSourceManager = $elementSourceManager;
         $this->versionChecker = $versionChecker;
         $this->logger = $logger;
@@ -136,7 +137,7 @@ class ElementSuggestFieldValueCollector implements ValueCollector
             /* @var $suggestNode ElementtypeStructureNode */
             $suggestNode = $structureNodeRow[1];
 
-            $structureValues = $this->elementService->findElementStructureValues($suggestNode->getDsId());
+            $structureValues = $this->findValues($suggestNode->getDsId(), $valueBag->getLanguage(), $elementtype);
 
             if (!count($structureValues)) {
                 continue;
@@ -172,7 +173,34 @@ class ElementSuggestFieldValueCollector implements ValueCollector
 
         if (count($values)) {
             $this->logger->info("Element Suggest Field | # Active <fg=green>{$values->count()}</>");
-            $this->logger->debug("Element Suggest Field | Active: ".json_encode($values->getValues()));
+            $this->logger->debug("Element Suggest Field | Active: ".json_encode($values->getValuesWithCount()));
+        }
+
+        return $values;
+    }
+
+    /**
+     * @param string $dsId
+     * @param string $language
+     * @param array  $versions
+     *
+     * @return ElementStructureValue[]
+     */
+    public function findValues($dsId, $language, Elementtype $elementtype)
+    {
+        $repository = $this->entityManager->getRepository(ElementStructureValue::class);
+
+        $elements = $this->versionChecker->getElements($elementtype);
+
+        $values = array();
+        foreach ($elements as $element) {
+            $criteria = array(
+                'dsId' => $dsId,
+                'language' => $language,
+                'version' => $this->versionChecker->getOnlineAndLatestVersion($element, $language, $elementtype->getType()),
+            );
+
+            $values = array_merge($values, $repository->findBy($criteria));
         }
 
         return $values;

@@ -62,7 +62,7 @@ class ElementVersionChecker
      *
      * @return bool
      */
-    public function isOnlineOrLAtestVersion(Element $element, $version, $language, $type)
+    public function isOnlineOrLatestVersion(Element $element, $version, $language, $type)
     {
         if ($this->isLatestVersion($element, $version)) {
             return true;
@@ -113,5 +113,66 @@ class ElementVersionChecker
         }
 
         return false;
+    }
+
+    /**
+     * @param Elementtype $elementtype
+     *
+     * @return Element[]
+     */
+    public function getElements(Elementtype $elementtype)
+    {
+        return $this->elementService->findElementsByElementtype($elementtype);
+    }
+
+    /**
+     * @param Element $element
+     * @param string  $language
+     * @param string  $type
+     *
+     * @return bool
+     */
+    public function getOnlineAndLatestVersion(Element $element, $language, $type)
+    {
+        return array_unique(array_merge(
+            array($this->getLatestVersion($element)),
+            $this->getOnlineVersion($element, $language, $type)
+        ));
+    }
+
+    /**
+     * @param Element $element
+     *
+     * @return int
+     */
+    public function getLatestVersion(Element $element)
+    {
+        return $this->elementService->findLatestElementVersion($element)->getVersion();
+    }
+
+    /**
+     * @param Element $element
+     * @param string  $language
+     * @param string  $type
+     *
+     * @return array
+     */
+    public function getOnlineVersion(Element $element, $language, $type)
+    {
+        $versions = array();
+
+        if ($type === Elementtype::TYPE_PART) {
+            foreach ($this->teaserManager->findBy(array('typeId' => $element->getEid())) as $teaser) {
+                $versions[] = $this->teaserManager->getPublishedVersion($teaser, $language);
+            }
+        } else {
+            foreach ($this->treeManager->findAll() as $tree) {
+                foreach ($tree->getByTypeId($element->getEid()) as $node) {
+                    $versions[] = $tree->getPublishedVersion($node, $language);
+                }
+            }
+        }
+
+        return $versions;
     }
 }

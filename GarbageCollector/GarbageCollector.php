@@ -98,13 +98,13 @@ class GarbageCollector
         $results = [];
 
         foreach ($dataSource->getValueBags() as $dataSourceValues) {
-            $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> / Language <fg=cyan>{$dataSourceValues->getLanguage()}</>");
+            $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> | Language <fg=cyan>{$dataSourceValues->getLanguage()}</> | <fg=cyan>{$dataSourceValues->countValues()}</> Values");
 
             $results[] = $result = $this->garbageCollect($dataSource, $dataSourceValues, $pretend);
 
-            $this->logger->notice("Garbage Collector | Active <fg=green>{$result->getActiveValues()->count()}</> | Remove <fg=red>{$result->getObsoleteValues()->count()}</>");
-            $this->logger->debug("Garbage Collector | Active: ".json_encode($result->getActiveValues()->getValues()));
-            $this->logger->debug("Garbage Collector | Remove: ".json_encode($result->getObsoleteValues()->getValues()));
+            $this->logger->notice("Garbage Collector | New <fg=green>{$result->getNewValues()->count()}</> | Existing <fg=yellow>{$result->getExistingValues()->count()}</> | Obsolete <fg=red>{$result->getObsoleteValues()->count()}</>");
+            $this->logger->debug("Garbage Collector | New: ".json_encode($result->getNewValues()->getValues()));
+            $this->logger->debug("Garbage Collector | Obsolete: ".json_encode($result->getObsoleteValues()->getValues()));
         }
 
         if (!$pretend) {
@@ -132,7 +132,9 @@ class GarbageCollector
         $activeValues = $collectedValues->getValues();
 
         $existingValues = $dataSourceValues->getValues();
+        $newValues = array_values(array_unique(array_diff($activeValues, $existingValues)));
         $obsoleteValues = array_values(array_unique(array_diff($existingValues, $activeValues)));
+        $existingValues = array_values(array_unique(array_diff($existingValues, $obsoleteValues)));
 
         if (!$pretend) {
             if (count($obsoleteValues)) {
@@ -151,6 +153,6 @@ class GarbageCollector
         $event = new GarbageCollectEvent($dataSourceValues);
         $this->dispatcher->dispatch(SuggestEvents::GARBAGE_COLLECT, $event);
 
-        return new ValueResult($dataSource, $dataSourceValues->getLanguage(), $collectedValues, new ValueCollection($obsoleteValues));
+        return new ValueResult($dataSource, $dataSourceValues->getLanguage(), new ValueCollection($newValues), new ValueCollection($existingValues), new ValueCollection($obsoleteValues));
     }
 }

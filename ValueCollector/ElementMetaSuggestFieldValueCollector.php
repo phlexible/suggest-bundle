@@ -110,6 +110,10 @@ class ElementMetaSuggestFieldValueCollector implements ValueCollector
 
             /* @var $field MetaSetField */
             foreach ($metaDataValues as $metaDataValue) {
+                if ($metaDataValue->getLanguage() !== $valueBag->getLanguage()) {
+                    continue;
+                }
+
                 $suggestValues = $this->splitter->split($metaDataValue->getValue());
 
                 if (!count($suggestValues)) {
@@ -132,7 +136,7 @@ class ElementMetaSuggestFieldValueCollector implements ValueCollector
 
         if (count($values)) {
             $this->logger->info("Element Meta Suggest Field | # Active <fg=green>{$values->count()}</>");
-            $this->logger->debug("Element Meta Suggest Field | Active: ".json_encode($values->getValues()));
+            $this->logger->debug("Element Meta Suggest Field | Active: ".json_encode($values->getValuesWithCount()));
         }
 
         return $values;

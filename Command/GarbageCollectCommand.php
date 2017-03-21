@@ -46,7 +46,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
         $gc = $this->getContainer()->get('phlexible_suggest.garbage_collector');
         $messagePoster = $this->getContainer()->get('phlexible_message.message_poster');
 
-        $this->getContainer()->get('doctrine.orm.default_entity_manager')->getConnection()->getConfiguration()->setSQLLogger(null);
+        #$this->getContainer()->get('doctrine.orm.default_entity_manager')->getConnection()->getConfiguration()->setSQLLogger(null);
 
         $pretend = !$input->getOption('run');
         $datasourceId = $input->getArgument('datasource');
@@ -68,26 +68,34 @@ class GarbageCollectCommand extends ContainerAwareCommand
         $subjects = array();
 
         foreach ($results as $result) {
-            $cntActive = count($result->getActiveValues());
+            $cntNew = count($result->getNewValues());
+            $cntKeep = count($result->getExistingValues());
             $cntObsolete = count($result->getObsoleteValues());
 
             if ($pretend) {
                 $output->writeln(
-                    "[{$result->getDataSource()->getTitle()}, {$result->getLanguage()}] Would store $cntActive active, "
-                    ."and remove $cntObsolete obsolete values"
+                    "Garbage collection of Data Source <fg=cyan>{$result->getDataSource()->getTitle()}</> in language "
+                    ."<fg=cyan>{$result->getLanguage()}</> would add <fg=yellow>$cntNew</> new, "
+                    ."keep <fg=green>$cntKeep</> existing, "
+                    ."and remove <fg=red>$cntObsolete</> obsolete values"
                 );
 
-                if ($output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
-                    $output->writeln(' Active: '.json_encode($result->getActiveValues()->getValues()));
-                    $output->writeln(' Obsolete: '.json_encode($result->getObsoleteValues()->getValues()));
+                if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG) {
+                    if (count($result->getNewValues())) {
+                        $output->writeln(' New: '.json_encode($result->getNewValues()->getValues()));
+                    }
+                    if (count($result->getObsoleteValues())) {
+                        $output->writeln(' Obsolete: '.json_encode($result->getObsoleteValues()->getValues()));
+                    }
                 }
             } else {
-                $subject = "[{$result->getDataSource()->getTitle()}, {$result->getLanguage()}] Stored $cntActive active, "
+                $subject = "[{$result->getDataSource()->getTitle()}, {$result->getLanguage()}] Added $cntNew new, "
+                    ."kept $cntKeep existing values "
                     ."and removed $cntObsolete obsolete values";
 
                 $output->writeln($subject);
 
-                if ($cntActive || $cntObsolete) {
+                if ($cntNew || $cntObsolete) {
                     $subjects[] = $subject;
                 }
             }

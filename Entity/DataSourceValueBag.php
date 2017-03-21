@@ -126,6 +126,14 @@ class DataSourceValueBag
     }
 
     /**
+     * @return array
+     */
+    public function countValues()
+    {
+        return count($this->values);
+    }
+
+    /**
      * @param string $value
      *
      * @return bool
