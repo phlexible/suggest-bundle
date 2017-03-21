@@ -65,11 +65,11 @@ class GarbageCollector
     /**
      * Start garbage collection.
      *
-     * @param bool $pretend
+     * @param bool $commit
      *
      * @return array
      */
-    public function run($pretend = false)
+    public function run($commit = false)
     {
         $results = [];
 
@@ -77,7 +77,7 @@ class GarbageCollector
         $offset = 0;
 
         foreach ($this->dataSourceManager->findBy([], null, $limit, $offset) as $dataSource) {
-            $results = array_merge($results, $this->runDataSource($dataSource, $pretend));
+            $results = array_merge($results, $this->runDataSource($dataSource, $commit));
 
             $offset += $limit;
         }
@@ -89,25 +89,25 @@ class GarbageCollector
      * Start garbage collection.
      *
      * @param DataSource $dataSource
-     * @param bool       $pretend
+     * @param bool       $commit
      *
      * @return ValueResult[]
      */
-    public function runDataSource(DataSource $dataSource, $pretend = false)
+    public function runDataSource(DataSource $dataSource, $commit = false)
     {
         $results = [];
 
         foreach ($dataSource->getValueBags() as $dataSourceValues) {
-            $this->logger->notice("Garbage Collector | ".($pretend?"<error> PRETEND </> | ":"")."Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> | Language <fg=cyan>{$dataSourceValues->getLanguage()}</> | <fg=cyan>{$dataSourceValues->countValues()}</> Values");
+            $this->logger->notice("Garbage Collector | ".($commit?"<error> COMMIT </>":"<question> SHOW </>")." | Data source <fg=cyan>{$dataSource->getTitle()}</> / <fg=cyan>{$dataSource->getId()}</> | Language <fg=cyan>{$dataSourceValues->getLanguage()}</> | <fg=cyan>{$dataSourceValues->countValues()}</> Values");
 
-            $results[] = $result = $this->garbageCollect($dataSource, $dataSourceValues, $pretend);
+            $results[] = $result = $this->garbageCollect($dataSource, $dataSourceValues, $commit);
 
             $this->logger->notice("Garbage Collector | New <fg=green>{$result->getNewValues()->count()}</> | Existing <fg=yellow>{$result->getExistingValues()->count()}</> | Obsolete <fg=red>{$result->getObsoleteValues()->count()}</>");
             $this->logger->debug("Garbage Collector | New: ".json_encode($result->getNewValues()->getValues()));
             $this->logger->debug("Garbage Collector | Obsolete: ".json_encode($result->getObsoleteValues()->getValues()));
         }
 
-        if (!$pretend) {
+        if ($commit) {
             $this->dataSourceManager->updateDataSource($dataSource);
         }
 

@@ -35,7 +35,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
             ->setAliases(array('suggest:gc'))
             ->setDescription('Cleanup unused data source values')
             ->addArgument('datasource', InputArgument::OPTIONAL, 'Data source ID. If not stated, all datasources are garbage collected.')
-            ->addOption('run', null, InputOption::VALUE_NONE, 'Execute. Otherwise only stats are shown.');
+            ->addOption('commit', null, InputOption::VALUE_NONE, 'Commit changes. Otherwise only changes are shown.');
     }
 
     /**
@@ -46,9 +46,9 @@ class GarbageCollectCommand extends ContainerAwareCommand
         $gc = $this->getContainer()->get('phlexible_suggest.garbage_collector');
         $messagePoster = $this->getContainer()->get('phlexible_message.message_poster');
 
-        #$this->getContainer()->get('doctrine.orm.default_entity_manager')->getConnection()->getConfiguration()->setSQLLogger(null);
+        $this->getContainer()->get('doctrine.orm.default_entity_manager')->getConnection()->getConfiguration()->setSQLLogger(null);
 
-        $pretend = !$input->getOption('run');
+        $commit = $input->getOption('commit');
         $datasourceId = $input->getArgument('datasource');
 
         if ($datasourceId) {
@@ -60,9 +60,9 @@ class GarbageCollectCommand extends ContainerAwareCommand
                 return 1;
             }
 
-            $results = $gc->runDataSource($dataSource, $pretend);
+            $results = $gc->runDataSource($dataSource, $commit);
         } else {
-            $results = $gc->run($pretend);
+            $results = $gc->run($commit);
         }
 
         $subjects = array();
@@ -72,7 +72,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
             $cntKeep = count($result->getExistingValues());
             $cntObsolete = count($result->getObsoleteValues());
 
-            if ($pretend) {
+            if ($commit) {
                 $output->writeln(
                     "Garbage collection of Data Source <fg=cyan>{$result->getDataSource()->getTitle()}</> in language "
                     ."<fg=cyan>{$result->getLanguage()}</> would add <fg=yellow>$cntNew</> new, "
@@ -101,7 +101,7 @@ class GarbageCollectCommand extends ContainerAwareCommand
             }
         }
 
-        if (!$pretend && count($subjects)) {
+        if (!$commit && count($subjects)) {
             $message = SuggestMessage::create(
                 'Garbage collection run on '.count($results).' data sources / languages.',
                 implode(PHP_EOL, $subjects)
