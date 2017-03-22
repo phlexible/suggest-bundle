@@ -73,12 +73,19 @@ class GarbageCollectCommand extends ContainerAwareCommand
             $cntObsolete = count($result->getObsoleteValues());
 
             if (!$commit) {
-                $output->writeln(
-                    "Garbage collection of Data Source <fg=cyan>{$result->getDataSource()->getTitle()}</> in language "
-                    ."<fg=cyan>{$result->getLanguage()}</> would add <fg=yellow>$cntNew</> new, "
-                    ."keep <fg=green>$cntKeep</> existing, "
-                    ."and remove <fg=red>$cntObsolete</> obsolete values"
-                );
+                $output->writeln(sprintf(
+                    "Garbage collection of data source <fg=cyan>%s</> in language "
+                    ."<fg=cyan>%s</> would add <fg=green>%d</> new, "
+                    ."keep <fg=yellow>%d</> existing, "
+                    ."and remove <fg=red>%d</> obsolete values.".PHP_EOL
+                    ."Memory usage was <fg=cyan>%.2f</> MB.",
+                    $result->getDataSource()->getTitle(),
+                    $result->getLanguage(),
+                    $cntNew,
+                    $cntKeep,
+                    $cntObsolete,
+                    memory_get_peak_usage(true)
+                ));
 
                 if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG) {
                     if (count($result->getNewValues())) {
@@ -89,10 +96,19 @@ class GarbageCollectCommand extends ContainerAwareCommand
                     }
                 }
             } else {
-                $subject = "Garbage collection of Data Source <fg=cyan>{$result->getDataSource()->getTitle()}</> in "
-                    ."language <fg=cyan>{$result->getLanguage()}</> added $cntNew new, "
-                    ."kept <fg=green>$cntKeep</> existing "
-                    ."and removed <fg=red>$cntObsolete</> obsolete values";
+                $subject = sprintf(
+                    "Garbage collection of data source <fg=cyan>%s</> in "
+                    ."language <fg=cyan>%s</> added <fg=green>%i</> new, "
+                    ."kept <fg=yellow>%i</> existing "
+                    ."and removed <fg=red>%i</> obsolete values.".PHP_EOL
+                    ."Memory usage was <fg=cyan>%.2f</> MB.",
+                    $result->getDataSource()->getTitle(),
+                    $result->getLanguage(),
+                    $cntNew,
+                    $cntKeep,
+                    $cntObsolete,
+                    memory_get_peak_usage(true)
+                );
 
                 $output->writeln($subject);
 
