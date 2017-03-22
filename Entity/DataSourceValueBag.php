@@ -39,7 +39,7 @@ class DataSourceValueBag
 
     /**
      * @var array
-     * @ORM\Column(name="values", type="json_array")
+     * @ORM\Column(name="`values`", type="json_array")
      */
     private $values = [];
 

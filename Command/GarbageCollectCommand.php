@@ -89,10 +89,10 @@ class GarbageCollectCommand extends ContainerAwareCommand
                     }
                 }
             } else {
-                $subject = "Garbage collection of Data Source [{$result->getDataSource()->getTitle()} in language "
-                    ."{$result->getLanguage()} added $cntNew new, "
-                    ."kept $cntKeep existing "
-                    ."and removed $cntObsolete obsolete values";
+                $subject = "Garbage collection of Data Source <fg=cyan>{$result->getDataSource()->getTitle()}</> in "
+                    ."language <fg=cyan>{$result->getLanguage()}</> added $cntNew new, "
+                    ."kept <fg=green>$cntKeep</> existing "
+                    ."and removed <fg=red>$cntObsolete</> obsolete values";
 
                 $output->writeln($subject);
 
