@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Field Controller.
+ * Field controller.
  *
  * @author Matthias Harmuth <mharmuth@brainbits.net>
  * @Route("/datasources/field", service="phlexible_suggest.field_controller")
@@ -53,7 +53,6 @@ class FieldController extends Controller
     public function suggestAction(Request $request)
     {
         $id = $request->get('id');
-        $dsId = $request->get('ds_id');
         $language = $request->get('language');
         $query = $request->get('query', null);
         $valuesQuery = $request->get('valuesqry', '');

@@ -27,6 +27,7 @@ services:
         class: Phlexible\Bundle\SuggestBundle\Controller\DataSourcesController
         arguments:
             - "@phlexible_suggest.data_source_manager"
+            - "@security.token_storage"
 
     phlexible_suggest.field_controller:
         class: Phlexible\Bundle\SuggestBundle\Controller\FieldController

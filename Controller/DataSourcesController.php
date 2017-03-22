@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Data sources controller.
@@ -34,20 +35,25 @@ class DataSourcesController
     private $dataSourceManager;
 
     /**
-     * DataController constructor.
-     *
-     * @param DataSourceManagerInterface $dataSourceManager
+     * @var TokenStorageInterface
      */
-    public function __construct(DataSourceManagerInterface $dataSourceManager)
+    private $tokenStorage;
+
+    /**
+     * @param DataSourceManagerInterface $dataSourceManager
+     * @param TokenStorageInterface       $tokenStorage
+     */
+    public function __construct(DataSourceManagerInterface $dataSourceManager, TokenStorageInterface $tokenStorage)
     {
         $this->dataSourceManager = $dataSourceManager;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
      * Return something.
      *
      * @return JsonResponse
-     * @Route("/list", name="suggest_datasources_list")
+     * @Route("/list", name="suggest_datasources_create")
      */
     public function listAction()
     {
@@ -80,7 +86,7 @@ class DataSourcesController
         $dataSource
             ->setTitle($title)
             ->setCreatedAt(new \DateTime())
-            ->setCreateUserId($this->getUser()->getId())
+            ->setCreateUserId($this->tokenStorage->getToken()->getUser()->getId())
             ->setModifiedAt($dataSource->getCreatedAt())
             ->setModifyUserId($dataSource->getCreateUserId());
 
@@ -93,32 +99,6 @@ class DataSourcesController
         }
 
         return $response;
-    }
-
-    /**
-     * Return something.
-     *
-     * @param Request $request
-     *
-     * @return ResultResponse
-     * @Route("/add", name="suggest_datasources_add")
-     */
-    public function addAction(Request $request)
-    {
-        $sourceId = $request->get('source_id');
-        $key = $request->get('key');
-        $language = $request->get('language', 'de');
-
-        // load
-        $source = $this->dataSourceManager->find($sourceId);
-
-        // add new key
-        $source->addValueForLanguage($key, false);
-
-        // save
-        $this->dataSourceManager->save($source, $this->getUser()->getId());
-
-        return new ResultResponse(true);
     }
 
     /**
