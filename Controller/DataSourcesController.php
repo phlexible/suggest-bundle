@@ -53,7 +53,7 @@ class DataSourcesController
      * Return something.
      *
      * @return JsonResponse
-     * @Route("/list", name="suggest_datasources_create")
+     * @Route("/list", name="suggest_datasources_list")
      */
     public function listAction()
     {
